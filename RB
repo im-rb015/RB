@@ -1,48 +1,24 @@
 https://florencefennel1-my.sharepoint.com/:f:/g/personal/pradeep_banda_florencefennel_co_in/Eg5BT1bbEWlNsmNET_BoMvwBub91j7TeRddVLZMsUvmA4Q?e=tlA7eA
 
 
-1.What is Node.js primarily used for? 
+1.Create rest api with CRUD operations.
+Create product.json file with following structure 
+{
+    "products": [
+      { "id": 101, "name": "Mobile", "make": "Apple "  , "qty": 100, "price": 11999.99  },
+      { "id": 102, "name": "Laptop", " make ": "HP", "qty": 200, "price": 89999.99   },
+    { "id": 103, "name": "Tab", " make ": "Samsung", "qty": 150, "price": 29999.99   }
+    ]
+  }
+  
+Use json server to load product.json file to load products data.
+Write Node js rest application with following endpoints(url)
+Post   -  /product       -add new  product
+Get    -/products     - get all products
+Get   -/product/:id   - get one prodcuct details for given id
+Put  -/product/:id    -update product details  to change qty, price etc
+Delete -/product/:id to delate given product
 
-A) To create client-side interfaces 
+Use async and await , axios ,express middleware to connect to json file through http methods. Test all above urls in postman.
 
-B )To act as a DBMS 
-
-C) To build server-side applications 
-
-D) To enhance CSS 
-
- 
-
-2. What is an advantage of using Node.js? 
-
-A. Single-threaded architecture 
-B. Cross-platform compatibility 
-C. Fast and scalable 
-D. All of the above 
-
- 
-
-3. Which of the following is a core module in Node.js? 
-
-A. http 
-B. fs 
-C. path 
-D. All of the above 
-
- 
-
-4. What is the purpose of the Node Package Manager (npm)? 
-
-A. To manage Node.js packages and dependencies 
-B. To run Node.js applications 
-C. To debug Node.js code 
-D. To deploy Node.js applications to the cloud 
-
- 
-
-5. What is an event-driven architecture? 
-
-A. An architecture where the flow of the program is determined by events 
-B. An architecture that uses callback functions to handle asynchronous operations 
-C. An architecture that uses promises to handle asynchronous code 
-D. All of the above 
+Need to upload .js files and screenshots of  api tester  for all crud operations. And upload zip file with your name in the below link
