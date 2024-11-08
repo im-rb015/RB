@@ -1,1 +1,48 @@
 https://florencefennel1-my.sharepoint.com/:f:/g/personal/pradeep_banda_florencefennel_co_in/Eg5BT1bbEWlNsmNET_BoMvwBub91j7TeRddVLZMsUvmA4Q?e=tlA7eA
+
+
+1.What is Node.js primarily used for? 
+
+A) To create client-side interfaces 
+
+B )To act as a DBMS 
+
+C) To build server-side applications 
+
+D) To enhance CSS 
+
+ 
+
+2. What is an advantage of using Node.js? 
+
+A. Single-threaded architecture 
+B. Cross-platform compatibility 
+C. Fast and scalable 
+D. All of the above 
+
+ 
+
+3. Which of the following is a core module in Node.js? 
+
+A. http 
+B. fs 
+C. path 
+D. All of the above 
+
+ 
+
+4. What is the purpose of the Node Package Manager (npm)? 
+
+A. To manage Node.js packages and dependencies 
+B. To run Node.js applications 
+C. To debug Node.js code 
+D. To deploy Node.js applications to the cloud 
+
+ 
+
+5. What is an event-driven architecture? 
+
+A. An architecture where the flow of the program is determined by events 
+B. An architecture that uses callback functions to handle asynchronous operations 
+C. An architecture that uses promises to handle asynchronous code 
+D. All of the above 
