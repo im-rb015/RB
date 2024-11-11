@@ -8,5 +8,34 @@
  
 add a constructor to set the initial
  
-withdraw function add validation so that balance can not be less than 0
- 
+withdraw function add validation so that balance can not be less than class ATM {
+  constructor(initialBalance) {
+    this.balance = initialBalance;
+  }
+
+  withdraw(amount) {
+    if (amount <= this.balance) {
+      this.balance -= amount;
+      console.log(`Withdrawn: ${amount}. New balance: ${this.balance}`);
+    } else {
+      console.log("Insufficient balance. Withdrawal denied.");
+    }
+  }
+
+  deposit(amount) {
+    this.balance += amount;
+    console.log(`Deposited: ${amount}. New balance: ${this.balance}`);
+  }
+
+  showBalance() {
+    console.log(`Available balance: ${this.balance}`);
+  }
+}
+
+// Example usage:
+const atm = new ATM(1000); // Initialize ATM with a balance of 1000
+atm.showBalance();          // Prints: Available balance: 1000
+atm.deposit(500);           // Prints: Deposited: 500. New balance: 1500
+atm.withdraw(300);          // Prints: Withdrawn: 300. New balance: 1200
+atm.withdraw(1500);         // Prints: Insufficient balance. Withdrawal denied.
+atm.showBalance();          // Prints: Available balance: 1200
