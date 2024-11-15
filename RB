@@ -1,41 +1,206 @@
- add a property called balance in the ATM class
-2. While creating the object of ATM set that value to some number
- 
- 
-3. withdraw function add a parameter. while withdraw function will be called that value should be subtracted freom balance.
-4. Same for deposit - that will have a number as parameter each time deposit is called that will increase the balanc
-5. Have a function called shawBalance that will print the present available balance in the ATM machine
- 
-add a constructor to set the initial
- 
-withdraw function add validation so that balance can not be less than class ATM {
-  constructor(initialBalance) {
-    this.balance = initialBalance;
-  }
+Enter Your Full Name
+Enter your answer
+2.What is the purpose of the render() method in a React class component?
+(1 Point)
 
-  withdraw(amount) {
-    if (amount <= this.balance) {
-      this.balance -= amount;
-      console.log(`Withdrawn: ${amount}. New balance: ${this.balance}`);
-    } else {
-      console.log("Insufficient balance. Withdrawal denied.");
-    }
-  }
+a) To initialize state To update props To return the JSX to be rendered
 
-  deposit(amount) {
-    this.balance += amount;
-    console.log(`Deposited: ${amount}. New balance: ${this.balance}`);
-  }
+b) To bind event handlers to return the JSX to be rendered
 
-  showBalance() {
-    console.log(`Available balance: ${this.balance}`);
-  }
-}
+c) To bind event handlers
 
-// Example usage:
-const atm = new ATM(1000); // Initialize ATM with a balance of 1000
-atm.showBalance();          // Prints: Available balance: 1000
-atm.deposit(500);           // Prints: Deposited: 500. New balance: 1500
-atm.withdraw(300);          // Prints: Withdrawn: 300. New balance: 1200
-atm.withdraw(1500);         // Prints: Insufficient balance. Withdrawal denied.
-atm.showBalance();          // Prints: Available balance: 1200
+d) To initialize state
+3.Which of the following hooks is used for managing state in a functional component?
+(1 Point)
+
+a) useEffect
+
+b) useState
+
+c) useReducer
+
+d) useContext
+4.Which lifecycle method is invoked immediately after a component is mounted?
+(1 Point)
+
+a) componentDidMount
+
+b) componentWillUnmount
+
+c) componentDidUpdate
+
+d) componentWillMount
+5.What is the purpose of the useEffect hook in React?
+(1 Point)
+
+a) To manage state
+
+b) To perform side effects in function components
+
+c) To create context
+
+d) To update props
+6.What does the 'useContext' hook do?
+(1 Point)
+
+a) Manages component state
+
+b) Manages side effects
+
+c) Consumes a context value
+
+d) Provides a context value
+7.How do you update state in a class component?
+(1 Point)
+
+a) this.state = newState
+
+b) this.setState(newState)
+
+c) this.updateState(newState)
+
+d) this.changeState(newState)
+8.What is the purpose of the 'key' prop when rendering lists of elements?
+(1 Point)
+
+a) To uniquely identify elements for React's reconciliation algorithm
+
+b) To bind events to list items
+
+c) To set the initial state of list items
+
+d) To set the initial state of list items
+9.Which of the following statements is true about React's Context API?
+(1 Point)
+
+a) Context should be used to pass data deeply throughout the component tree.
+
+b) Frequent updates to context values can lead to performance issues
+
+c) Avoids passing props manually
+
+d) All options
+10.How do you pass data to a child component?
+(1 Point)
+
+a) Using state
+
+b) Using props
+
+c) Using context
+
+d) Using the 'data' attribute
+11.Which of the following is true about React components?
+(1 Point)
+
+a) They must be written as classes.
+
+b) They must be written as functions.
+
+c) They can be either classes or functions.
+
+d) They cannot be nested.
+12.What is JSX?
+(1 Point)
+
+a) A type of JavaScript function
+
+b) A way to include JavaScript in HTML
+
+c) A syntax extension for JavaScript
+
+d) A new data format like JSON
+13.Which of the following is the correct way to import React in a file?
+(1 Point)
+
+a) import React from 'react';
+
+b) import React from 'react.js';
+
+c) require('react');
+
+d) include 'react';
+14. "If you see the following import in a file, what is being used for state management in the component?
+import React, {useState} from 'react';"
+(1 Point)
+
+a) React Hooks
+
+b) stateful components
+
+c) math
+
+d) class components
+15.Using object literal enhancement, you can put values back into an object. When you log person to the console, what is the output?
+  const name = 'Rachel';  const age = 31;  const person = { name, age };  console.log(person);
+(1 Point)
+
+a) {{name: "Rachel", age: 31}}
+
+b) {name: "Rachel", age: 31}
+
+c) {person: "Rachel", person: 31}}
+
+d) {person: {name: "Rachel", age: 31}}
+16.How do you handle events in React?
+(1 Point)
+
+a) Using event listeners
+
+b) Using event handlers
+
+c) Using callback functions
+
+d) All of the above
+17.What is the purpose of the useCallback hook in React?
+(1 Point)
+
+a) To memorize functions
+
+b) To handle side effects
+
+b) To optimize rendering performance
+
+d) To simplify state management
+18.Which of the following is a benefit of using React Fragments
+(1 Point)
+
+a) Improved performance
+
+b) Simplified JSX syntax
+
+c) Reduced memory usage
+
+d) All of the above
+19. What is the difference between useMemo and useCallback ?
+(1 Point)
+
+a) useMemo memorizes values, useCallback memorizes functions
+
+b) useMemo memorizes functions, useCallback memorizes values
+
+c) useMemo is for rendering, useCallback is for events
+
+d) useMemo is for state, useCallback is for props
+20.Which of the following is a core principle of Redux?
+(1 Point)
+
+a) Single source of truth
+
+b) Multiple sources of truth
+
+c) Decentralized state management
+
+d) Synchronous state updates
+
+Option 2
+21.What is the role of the store in Redux?
+(1 Point)
+
+a) Holds the application's state
+
+b) Dispatches actions
+
+c) Reduces state changes
+
+d) Provides middleware functionality
