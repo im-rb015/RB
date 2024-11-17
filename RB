@@ -1,257 +1,69 @@
-Got it! Let’s break this project into simple steps. We’ll tackle each part one by one, ensuring you understand and can follow along. Here’s the roadmap:
+Let’s complete the remaining components and integrate everything into your app. This includes the Booking Component, PNR generation, and an optional Receipt Component.
 
-Step 1: Setting Up the Environment
+Step 8: Build the Booking Component
 
-1. Install Node.js and npm
+1. Create the Booking Component File
 
-	•	Download and install Node.js from Node.js Official Website. This also installs npm (Node Package Manager).
-
-2. Install a Code Editor
-
-	•	Use Visual Studio Code (VSCode) for writing your code.
-
-Step 2: Create a React Project
-
-	1.	Create a new React app
-Open your terminal (Command Prompt or VSCode Terminal) and run:
-
-npx create-react-app flight-booking
-
-This sets up a basic React project.
-
-	2.	Navigate to your project folder
-
-cd flight-booking
-
-
-	3.	Start the development server
-
-npm start
-
-Your browser should open with a default React app.
-
-Step 3: Set Up the Backend (Node.js + Express)
-
-	1.	Create a backend folder
-In your project directory, create a new folder called backend.
-	2.	Initialize Node.js in the backend folder
-Navigate to the backend folder:
-
-cd backend
-npm init -y
-
-This creates a package.json file.
-
-	3.	Install Express
-
-npm install express body-parser cors
-
-
-	4.	Create a basic Express server
-In the backend folder, create a file named server.js and add this code:
-
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
-
-// Sample API
-app.get('/', (req, res) => {
-  res.send('Backend is working!');
-});
-
-app.listen(5000, () => {
-  console.log('Server running on http://localhost:5000');
-});
-
-
-	5.	Start the server
-Run the server from the backend folder:
-
-node server.js
-
-Visit http://localhost:5000 in your browser to confirm it’s running.
-
-Step 4: Connect React to Node.js
-
-	1.	Install Axios in React
-In the React project folder (flight-booking), install Axios:
-
-npm install axios
-
-
-	2.	Test the connection
-Edit the App.js file in your React project to call the backend API:
-
-import React, { useEffect } from 'react';
-import axios from 'axios';
-
-function App() {
-  useEffect(() => {
-    axios.get('http://localhost:5000')
-      .then(response => console.log(response.data))
-      .catch(error => console.error(error));
-  }, []);
-
-  return (
-    <div>
-      <h1>Flight Booking App</h1>
-    </div>
-  );
-}
-
-export default App;
-
-Start your React app (npm start) and check the browser console. You should see “Backend is working!”
-
-Step 5: Build the Frontend (React Components)
-
-	1.	Home Page
-	•	Create a components folder inside src.
-	•	Create a Home.js file for the Home component:
+	1.	Inside the src/components folder, create a file named Booking.js.
+	2.	Add the following code to handle passenger input and booking submission:
 
 import React, { useState } from 'react';
 
-const Home = ({ onSearch }) => {
-  const [formData, setFormData] = useState({ source: '', destination: '', date: '', passengers: 1 });
+const Booking = ({ flight, onSubmit, onCancel }) => {
+  const [passengers, setPassengers] = useState([]);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Dynamically create input fields for passenger names
+  const handlePassengerChange = (index, value) => {
+    const updatedPassengers = [...passengers];
+    updatedPassengers[index] = value;
+    setPassengers(updatedPassengers);
   };
 
   const handleSubmit = () => {
-    onSearch(formData);
+    if (passengers.length !== flight.passengers) {
+      alert(`Please enter names for all ${flight.passengers} passengers.`);
+      return;
+    }
+    onSubmit({ flight, passengers });
   };
 
   return (
     <div>
-      <h2>Search Flights</h2>
-      <input name="source" placeholder="Source City" onChange={handleChange} />
-      <input name="destination" placeholder="Destination City" onChange={handleChange} />
-      <input name="date" type="date" onChange={handleChange} />
-      <input name="passengers" type="number" min="1" onChange={handleChange} />
-      <button onClick={handleSubmit}>Search</button>
+      <h2>Booking for {flight.source} → {flight.destination}</h2>
+      <p>Date: {flight.date}</p>
+      <p>Price: ${flight.price} per passenger</p>
+
+      <h3>Enter Passenger Names:</h3>
+      {[...Array(flight.passengers)].map((_, index) => (
+        <input
+          key={index}
+          placeholder={`Passenger ${index + 1} Name`}
+          onChange={(e) => handlePassengerChange(index, e.target.value)}
+        />
+      ))}
+
+      <button onClick={handleSubmit}>Submit Booking</button>
+      <button onClick={onCancel}>Cancel</button>
     </div>
   );
 };
 
-export default Home;
+export default Booking;
 
+Step 9: Integrate Booking into the App
 
-	2.	Integrate the Home Component
-Replace the App.js content:
-
-import React, { useState } from 'react';
-import Home from './components/Home';
-
-function App() {
-  const [flights, setFlights] = useState([]);
-
-  const handleSearch = (formData) => {
-    console.log('Search Data:', formData);
-    // Later: Call API to fetch flights
-  };
-
-  return (
-    <div>
-      <Home onSearch={handleSearch} />
-    </div>
-  );
-}
-
-export default App;
-
-Step 6: Build the Backend API for Flights
-
-	1.	Add a Flights Endpoint
-Update server.js to include:
-
-const flights = [
-  { id: 1, source: 'City A', destination: 'City B', date: '2024-12-01', price: 200 },
-  { id: 2, source: 'City A', destination: 'City C', date: '2024-12-01', price: 300 },
-];
-
-app.post('/flights', (req, res) => {
-  const { source, destination, date } = req.body;
-  const matchingFlights = flights.filter(
-    (flight) =>
-      flight.source === source && flight.destination === destination && flight.date === date
-  );
-  res.json(matchingFlights);
-});
-
-
-	2.	Fetch Flights from React
-Update handleSearch in App.js:
-
-import axios from 'axios';
-
-const handleSearch = async (formData) => {
-  try {
-    const response = await axios.post('http://localhost:5000/flights', formData);
-    setFlights(response.data);
-    console.log('Flights:', response.data);
-  } catch (error) {
-    console.error('Error fetching flights:', error);
-  }
-};
-
-This sets up the basics. Next steps would include:
-	1.	Adding the Flight Listing and Booking components.
-	2.	Expanding the backend to handle bookings.
-	3.	Generating the PNR.
-Great! Let’s move forward with Step 7: Building the Flight Listing Component. This component will display the flights you fetch from the backend after a search.
-
-Step 7: Create the Flight Listing Component
-
-1. Create the Component File
-
-	1.	Inside the src/components folder, create a new file called FlightListing.js.
-	2.	Add the following code to handle the display of flight options:
-
-import React from 'react';
-
-const FlightListing = ({ flights, onBook, onBack }) => {
-  return (
-    <div>
-      <h2>Available Flights</h2>
-      {flights.length === 0 ? (
-        <p>No flights available. Try a different search.</p>
-      ) : (
-        <ul>
-          {flights.map((flight) => (
-            <li key={flight.id}>
-              <p>
-                {flight.source} → {flight.destination} | {flight.date} | ${flight.price}
-              </p>
-              <button onClick={() => onBook(flight)}>Book</button>
-            </li>
-          ))}
-        </ul>
-      )}
-      <button onClick={onBack}>Back to Search</button>
-    </div>
-  );
-};
-
-export default FlightListing;
-
-2. Integrate Flight Listing into the App
-
-	1.	Update the App.js to include the FlightListing component and handle navigation between Home and Flight Listing.
-Replace the existing App.js code with:
+	1.	Update the App.js file to include the Booking component and manage booking submission:
 
 import React, { useState } from 'react';
 import Home from './components/Home';
 import FlightListing from './components/FlightListing';
+import Booking from './components/Booking';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [bookingDetails, setBookingDetails] = useState(null);
 
   const handleSearch = async (formData) => {
     try {
@@ -269,8 +81,24 @@ function App() {
   };
 
   const handleBook = (flight) => {
-    setSelectedFlight(flight);
+    setSelectedFlight({ ...flight, passengers: flight.passengers || 1 });
     setCurrentPage('booking');
+  };
+
+  const handleSubmitBooking = async (bookingData) => {
+    try {
+      const response = await fetch('http://localhost:5000/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData),
+      });
+      const data = await response.json();
+      setBookingDetails(data);
+      alert(`Booking Confirmed! Your PNR: ${data.pnr}`);
+      setCurrentPage('home');
+    } catch (error) {
+      console.error('Error booking flight:', error);
+    }
   };
 
   const handleBackToHome = () => {
@@ -283,32 +111,109 @@ function App() {
       {currentPage === 'listing' && (
         <FlightListing flights={flights} onBook={handleBook} onBack={handleBackToHome} />
       )}
+      {currentPage === 'booking' && (
+        <Booking
+          flight={selectedFlight}
+          onSubmit={handleSubmitBooking}
+          onCancel={handleBackToHome}
+        />
+      )}
     </div>
   );
 }
 
 export default App;
 
-3. Test the Workflow
+Step 10: Backend API for Booking
 
-	1.	Start the backend server:
+	1.	Update the server.js file to handle bookings and generate a PNR:
+
+const bookings = [];
+
+const generatePNR = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let pnr = '';
+  for (let i = 0; i < 6; i++) {
+    pnr += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return pnr;
+};
+
+app.post('/booking', (req, res) => {
+  const { flight, passengers } = req.body;
+  const pnr = generatePNR();
+
+  const booking = {
+    pnr,
+    flight,
+    passengers,
+    totalPrice: passengers.length * flight.price,
+  };
+
+  bookings.push(booking);
+  res.json(booking);
+});
+
+Step 11: Optional Receipt Component
+
+	1.	Create a new file named Receipt.js:
+
+import React from 'react';
+
+const Receipt = ({ booking }) => {
+  if (!booking) return null;
+
+  return (
+    <div>
+      <h2>Booking Receipt</h2>
+      <p>PNR: {booking.pnr}</p>
+      <p>Flight: {booking.flight.source} → {booking.flight.destination}</p>
+      <p>Date: {booking.flight.date}</p>
+      <p>Total Price: ${booking.totalPrice}</p>
+      <h3>Passengers:</h3>
+      <ul>
+        {booking.passengers.map((name, index) => (
+          <li key={index}>{name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Receipt;
+
+
+	2.	Update App.js to show the receipt:
+
+import Receipt from './components/Receipt';
+
+// Add this below the bookingDetails state:
+const [showReceipt, setShowReceipt] = useState(false);
+
+const handleShowReceipt = () => {
+  setShowReceipt(true);
+};
+
+// Modify the `return` to include the Receipt:
+{showReceipt && <Receipt booking={bookingDetails} />}
+
+Step 12: Test the App
+
+	1.	Start the backend:
 
 node backend/server.js
 
 
-	2.	Start the React app:
+	2.	Start the React frontend:
 
 npm start
 
 
-	3.	Perform the following actions:
-	•	Search for flights on the Home page.
-	•	View the flight list on the Flight Listing page.
-	•	Test the “Book” and “Back to Search” buttons.
+	3.	Workflow:
+	•	Search flights.
+	•	Select a flight to book.
+	•	Enter passenger details.
+	•	Confirm booking and see the PNR.
+	•	Optionally view the receipt.
 
-Next Step: Add the Booking Component
-
-When you’re ready, let me know, and we’ll proceed to build the Booking page!
-
-
-Let me know when you’re ready for the next step, and I’ll guide you!
+Let me know if you encounter any issues!
