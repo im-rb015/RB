@@ -203,5 +203,112 @@ This sets up the basics. Next steps would include:
 	1.	Adding the Flight Listing and Booking components.
 	2.	Expanding the backend to handle bookings.
 	3.	Generating the PNR.
+Great! Let’s move forward with Step 7: Building the Flight Listing Component. This component will display the flights you fetch from the backend after a search.
+
+Step 7: Create the Flight Listing Component
+
+1. Create the Component File
+
+	1.	Inside the src/components folder, create a new file called FlightListing.js.
+	2.	Add the following code to handle the display of flight options:
+
+import React from 'react';
+
+const FlightListing = ({ flights, onBook, onBack }) => {
+  return (
+    <div>
+      <h2>Available Flights</h2>
+      {flights.length === 0 ? (
+        <p>No flights available. Try a different search.</p>
+      ) : (
+        <ul>
+          {flights.map((flight) => (
+            <li key={flight.id}>
+              <p>
+                {flight.source} → {flight.destination} | {flight.date} | ${flight.price}
+              </p>
+              <button onClick={() => onBook(flight)}>Book</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button onClick={onBack}>Back to Search</button>
+    </div>
+  );
+};
+
+export default FlightListing;
+
+2. Integrate Flight Listing into the App
+
+	1.	Update the App.js to include the FlightListing component and handle navigation between Home and Flight Listing.
+Replace the existing App.js code with:
+
+import React, { useState } from 'react';
+import Home from './components/Home';
+import FlightListing from './components/FlightListing';
+
+function App() {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [flights, setFlights] = useState([]);
+  const [selectedFlight, setSelectedFlight] = useState(null);
+
+  const handleSearch = async (formData) => {
+    try {
+      const response = await fetch('http://localhost:5000/flights', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      setFlights(data);
+      setCurrentPage('listing');
+    } catch (error) {
+      console.error('Error fetching flights:', error);
+    }
+  };
+
+  const handleBook = (flight) => {
+    setSelectedFlight(flight);
+    setCurrentPage('booking');
+  };
+
+  const handleBackToHome = () => {
+    setCurrentPage('home');
+  };
+
+  return (
+    <div>
+      {currentPage === 'home' && <Home onSearch={handleSearch} />}
+      {currentPage === 'listing' && (
+        <FlightListing flights={flights} onBook={handleBook} onBack={handleBackToHome} />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+3. Test the Workflow
+
+	1.	Start the backend server:
+
+node backend/server.js
+
+
+	2.	Start the React app:
+
+npm start
+
+
+	3.	Perform the following actions:
+	•	Search for flights on the Home page.
+	•	View the flight list on the Flight Listing page.
+	•	Test the “Book” and “Back to Search” buttons.
+
+Next Step: Add the Booking Component
+
+When you’re ready, let me know, and we’ll proceed to build the Booking page!
+
 
 Let me know when you’re ready for the next step, and I’ll guide you!
