@@ -1,6 +1,207 @@
-There will be following components:
-a) Home : Will have Source  and Destination city name  and date , number of passengers and a search button. 
-c) Flight Listing: Once that search button is clicked a list of flights matching that criterion will be displayed.   Each item in the list will have a book button. User should be able to go back the home page from here.
-d)Booking:  Once   book button is clicked a final booking page will come where user will be able to key in passengers names and once submit button is clicked a PNR will be generated and  on the   screen and user will be send back to Home Page.
-Optional Requirement : Upon completetion of the  booking a Receipt with all booking details like passengers name,PNR number,Source   and Destination airport and the total price of the ticket.
-You may add any more components if required to fulfil these requirement
+Got it! Let’s break this project into simple steps. We’ll tackle each part one by one, ensuring you understand and can follow along. Here’s the roadmap:
+
+Step 1: Setting Up the Environment
+
+1. Install Node.js and npm
+
+	•	Download and install Node.js from Node.js Official Website. This also installs npm (Node Package Manager).
+
+2. Install a Code Editor
+
+	•	Use Visual Studio Code (VSCode) for writing your code.
+
+Step 2: Create a React Project
+
+	1.	Create a new React app
+Open your terminal (Command Prompt or VSCode Terminal) and run:
+
+npx create-react-app flight-booking
+
+This sets up a basic React project.
+
+	2.	Navigate to your project folder
+
+cd flight-booking
+
+
+	3.	Start the development server
+
+npm start
+
+Your browser should open with a default React app.
+
+Step 3: Set Up the Backend (Node.js + Express)
+
+	1.	Create a backend folder
+In your project directory, create a new folder called backend.
+	2.	Initialize Node.js in the backend folder
+Navigate to the backend folder:
+
+cd backend
+npm init -y
+
+This creates a package.json file.
+
+	3.	Install Express
+
+npm install express body-parser cors
+
+
+	4.	Create a basic Express server
+In the backend folder, create a file named server.js and add this code:
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+
+// Sample API
+app.get('/', (req, res) => {
+  res.send('Backend is working!');
+});
+
+app.listen(5000, () => {
+  console.log('Server running on http://localhost:5000');
+});
+
+
+	5.	Start the server
+Run the server from the backend folder:
+
+node server.js
+
+Visit http://localhost:5000 in your browser to confirm it’s running.
+
+Step 4: Connect React to Node.js
+
+	1.	Install Axios in React
+In the React project folder (flight-booking), install Axios:
+
+npm install axios
+
+
+	2.	Test the connection
+Edit the App.js file in your React project to call the backend API:
+
+import React, { useEffect } from 'react';
+import axios from 'axios';
+
+function App() {
+  useEffect(() => {
+    axios.get('http://localhost:5000')
+      .then(response => console.log(response.data))
+      .catch(error => console.error(error));
+  }, []);
+
+  return (
+    <div>
+      <h1>Flight Booking App</h1>
+    </div>
+  );
+}
+
+export default App;
+
+Start your React app (npm start) and check the browser console. You should see “Backend is working!”
+
+Step 5: Build the Frontend (React Components)
+
+	1.	Home Page
+	•	Create a components folder inside src.
+	•	Create a Home.js file for the Home component:
+
+import React, { useState } from 'react';
+
+const Home = ({ onSearch }) => {
+  const [formData, setFormData] = useState({ source: '', destination: '', date: '', passengers: 1 });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = () => {
+    onSearch(formData);
+  };
+
+  return (
+    <div>
+      <h2>Search Flights</h2>
+      <input name="source" placeholder="Source City" onChange={handleChange} />
+      <input name="destination" placeholder="Destination City" onChange={handleChange} />
+      <input name="date" type="date" onChange={handleChange} />
+      <input name="passengers" type="number" min="1" onChange={handleChange} />
+      <button onClick={handleSubmit}>Search</button>
+    </div>
+  );
+};
+
+export default Home;
+
+
+	2.	Integrate the Home Component
+Replace the App.js content:
+
+import React, { useState } from 'react';
+import Home from './components/Home';
+
+function App() {
+  const [flights, setFlights] = useState([]);
+
+  const handleSearch = (formData) => {
+    console.log('Search Data:', formData);
+    // Later: Call API to fetch flights
+  };
+
+  return (
+    <div>
+      <Home onSearch={handleSearch} />
+    </div>
+  );
+}
+
+export default App;
+
+Step 6: Build the Backend API for Flights
+
+	1.	Add a Flights Endpoint
+Update server.js to include:
+
+const flights = [
+  { id: 1, source: 'City A', destination: 'City B', date: '2024-12-01', price: 200 },
+  { id: 2, source: 'City A', destination: 'City C', date: '2024-12-01', price: 300 },
+];
+
+app.post('/flights', (req, res) => {
+  const { source, destination, date } = req.body;
+  const matchingFlights = flights.filter(
+    (flight) =>
+      flight.source === source && flight.destination === destination && flight.date === date
+  );
+  res.json(matchingFlights);
+});
+
+
+	2.	Fetch Flights from React
+Update handleSearch in App.js:
+
+import axios from 'axios';
+
+const handleSearch = async (formData) => {
+  try {
+    const response = await axios.post('http://localhost:5000/flights', formData);
+    setFlights(response.data);
+    console.log('Flights:', response.data);
+  } catch (error) {
+    console.error('Error fetching flights:', error);
+  }
+};
+
+This sets up the basics. Next steps would include:
+	1.	Adding the Flight Listing and Booking components.
+	2.	Expanding the backend to handle bookings.
+	3.	Generating the PNR.
+
+Let me know when you’re ready for the next step, and I’ll guide you!
