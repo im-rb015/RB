@@ -1,23 +1,6 @@
-Here are the answers:
-	2.	a) To initialize state, update props, and return the JSX to be rendered
-	3.	b) useState
-	4.	a) componentDidMount
-	5.	b) To perform side effects in function components
-	6.	c) Consumes a context value
-	7.	b) this.setState(newState)
-	8.	a) To uniquely identify elements for React’s reconciliation algorithm
-	9.	d) All options
-	10.	b) Using props
-	11.	c) They can be either classes or functions
-	12.	c) A syntax extension for JavaScript
-	13.	a) import React from ‘react’;
-	14.	a) React Hooks
-	15.	b) {name: “Rachel”, age: 31}
-	16.	d) All of the above
-	17.	a) To memorize functions
-	18.	d) All of the above
-	19.	a) useMemo memorizes values, useCallback memorizes functions
-	20.	a) Single source of truth
-	21.	a) Holds the application’s state
-
-Let me know if you need any more help!
+There will be following components:
+a) Home : Will have Source  and Destination city name  and date , number of passengers and a search button. 
+c) Flight Listing: Once that search button is clicked a list of flights matching that criterion will be displayed.   Each item in the list will have a book button. User should be able to go back the home page from here.
+d)Booking:  Once   book button is clicked a final booking page will come where user will be able to key in passengers names and once submit button is clicked a PNR will be generated and  on the   screen and user will be send back to Home Page.
+Optional Requirement : Upon completetion of the  booking a Receipt with all booking details like passengers name,PNR number,Source   and Destination airport and the total price of the ticket.
+You may add any more components if required to fulfil these requirement
