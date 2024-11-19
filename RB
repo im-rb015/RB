@@ -1,20 +1,27 @@
-One of your dependencies, babel-preset-react-app, is importing the
-"@babel/plugin-proposal-private-property-in-object" package without
-declaring it in its dependencies. This is currently working because
-"@babel/plugin-proposal-private-property-in-object" is already in your
-Failed to compile.
-
-Module not found: Error: Can't resolve 'react-router-dom' in 'C:\Users\rahul244667\Downloads\Training\flight-booking\src'
-ERROR in ./src/App.js 5:0-74
-Module not found: Error: Can't resolve 'react-router-dom' in 'C:\Users\rahul244667\Downloads\Training\flight-booking\src'
-
-ERROR in ./src/components/Booking.js 6:0-60
-Module not found: Error: Can't resolve 'react-router-dom' in 'C:\Users\rahul244667\Downloads\Training\flight-booking\src\components'        
-
-ERROR in ./src/components/FlightListing.js 6:0-60
-Module not found: Error: Can't resolve 'react-router-dom' in 'C:\Users\rahul244667\Downloads\Training\flight-booking\src\components'        
-
-ERROR in ./src/components/Home.js 6:0-47
-Module not found: Error: Can't resolve 'react-router-dom' in 'C:\Users\rahul244667\Downloads\Training\flight-booking\src\components'        
-
-webpack compiled with 4 errors
+import { Text, View,StyleSheet } from "react-native";
+ 
+export default function Index() {
+  return (
+    <View style={styles.container}>
+    <View style={styles.square} />
+    <View style={styles.square} />
+    <View style={styles.square} />
+    </View>
+  );
+}
+ 
+ 
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#7CA1B4",
+    flex: 1,
+    //justifyContent:"space-between"
+    alignItems:"baseline"
+  },
+  square: {
+    backgroundColor: "#7cb48f",
+    width: 100,
+    height: 100,
+    margin: 4,
+  },
+});
