@@ -1,27 +1,10 @@
-  C:\Users\rahul244667\AppData\Local\Programs\Python\Python311\Lib\site-packages\strea
-  mlit\runtime\scriptrunner\exec_code.py:121 in exec_func_with_error_handling
-
-  C:\Users\rahul244667\AppData\Local\Programs\Python\Python311\Lib\site-packages\strea
-  mlit\runtime\scriptrunner\script_runner.py:640 in code_to_exec
-
-  C:\Users\rahul244667\Downloads\MLOps\Xtera\X-Terra\main.py:122 in <module>
-
-    119 
-    120 # Example usage:
-    121 if __name__ == "__main__":
-  ❱ 122 │   rendered_yaml, parameters = customize_pipeline_yaml()
-    123 │   print("rendered_yaml:", rendered_yaml)
-    124 │   print("parameters:", parameters)
-    125 │   client = parameters['client_directory_name']
-────────────────────────────────────────────────────────────────────────────────────────
-TypeError: cannot unpack non-iterable NoneType object
-rendered_yaml: trigger:
+trigger:
   branches:
     include:
       - main
   paths:
     include:
-      - client/RB/*
+      - client/{{ client_directory_name }}/*
 
 parameters:
   - name: terraform_version
@@ -46,21 +29,21 @@ parameters:
     default: 'ubuntu-latest'
 
 variables:
-  terraformWorkingDirectory: '$(System.DefaultWorkingDirectory)/RB/terraform/dev'
+  terraformWorkingDirectory: '$(System.DefaultWorkingDirectory)/{{ client_directory_name }}/terraform/{{ environment }}'
 
 stages:
   - stage: Terraform
-    displayName: 'Terraform Deployment Stage - dev'
+    displayName: 'Terraform Deployment Stage - {{ environment }}'
     jobs:
       - job: Deploy
         displayName: 'Deploy Infrastructure'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: '{{ vm_image }}'
         steps:
           - task: TerraformInstaller@0
             displayName: 'Install Terraform'
             inputs:
-              terraformVersion: '1.11.4'
+              terraformVersion: '{{ terraform_version }}'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Init'
@@ -68,11 +51,11 @@ stages:
               provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(terraformWorkingDirectory)'
-              backendServiceArm: 'rbrg'
-              backendAzureRmResourceGroupName: 'rb'
-              backendAzureRmStorageAccountName: 'rbsa'
-              backendAzureRmContainerName: 'rbcontainer'
-              backendAzureRmKey: 'terraform.tfstate'
+              backendServiceArm: '{{ service_connection_name }}'
+              backendAzureRmResourceGroupName: '{{ resource_group }}'
+              backendAzureRmStorageAccountName: '{{ storage_account }}'
+              backendAzureRmContainerName: '{{ container_name }}'
+              backendAzureRmKey: '{{ backend_key }}'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Plan'
@@ -80,8 +63,8 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               workingDirectory: '$(terraformWorkingDirectory)'
-              environmentServiceNameAzureRM: 'rbrg'
-              commandOptions: '-var-file="environments/dev.tfvars"'
+              environmentServiceNameAzureRM: '{{ service_connection_name }}'
+              commandOptions: '-var-file="environments/{{ environment }}.tfvars"'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Apply'
@@ -89,8 +72,5 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               workingDirectory: '$(terraformWorkingDirectory)'
-              environmentServiceNameAzureRM: 'rbrg'
-              commandOptions: '-var-file="environments/dev.tfvars"'
-parameters: {'client_directory_name': 'RB', 'environment': 'dev', 'service_connection_name': 'rbrg', 'resource_group': 'rb', 'storage_account': 'rbsa', 'container_name': 'rbcontainer', 'backend_key': 'terraform.tfstate', 'terraform_version': '1.11.4', 'vm_image': 'ubuntu-latest'}
-client: RB
-❌ 400 Client Error: Bad Request for url: https://dev.azure.com/MLOps-COE-ORG/X-Terra/_apis/pipelines/74/runs?api-version=7.0
+              environmentServiceNameAzureRM: '{{ service_connection_name }}'
+              commandOptions: '-var-file="environments/{{ environment }}.tfvars"'
