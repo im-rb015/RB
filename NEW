@@ -1,24 +1,3 @@
-import requests
-import json
-import os
-from azure.identity import ClientSecretCredential
-from azure.devops.connection import Connection
-from msrest.authentication import BasicAuthentication
-import streamlit as st
-from jinja2 import Template
-
-# Service Principal credentials
-TENANT_ID = ""  # Azure AD tenant ID
-CLIENT_ID = ""  # Service Principal client/app ID
-CLIENT_SECRET = ""  # Service Principal secret
-
-# Azure DevOps details
-AZURE_ORG = ""
-PROJECT = ""
-REPO_NAME = ""
-AZURE_DEVOPS_URL = f"https://dev.azure.com/{AZURE_ORG}"
-API_VERSION = "7.0"
-
 def get_azure_devops_client():
     """Create an authenticated Azure DevOps client using Service Principal"""
     # Get access token from Azure AD
@@ -42,10 +21,21 @@ def get_repo_id(client):
     repo = git_client.get_repository(REPO_NAME, PROJECT)
     return repo.id
 
-def get_existing_pipelines(client):
-    pipeline_client = client.clients.get_pipeline_client()
-    pipelines = pipeline_client.list_pipelines(PROJECT)
-    return {pipe.name: pipe.id for pipe in pipelines}
+def get_existing_pipelines(connection):
+    # For pipelines, we need to use the REST API directly
+    # The SDK doesn't have comprehensive pipeline support
+    credentials = connection.config.credentials
+    token = credentials.password
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Basic {token}"
+    }
+    
+    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines?api-version={API_VERSION}"
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return {pipe['name']: pipe['id'] for pipe in response.json().get('value', [])}
 
 def create_or_update_yaml(client, repo_id, branch, yaml_path, content):
     git_client = client.clients.get_git_client()
@@ -84,10 +74,18 @@ def create_or_update_yaml(client, repo_id, branch, yaml_path, content):
     
     return git_client.create_push(push, repo_id, PROJECT)
 
-def create_pipeline(client, client_name, yaml_path, repo_id):
-    pipeline_client = client.clients.get_pipeline_client()
+def create_pipeline(connection, client_name, yaml_path, repo_id):
+    # Use REST API for pipeline creation
+    credentials = connection.config.credentials
+    token = credentials.password
     
-    pipeline_config = {
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Basic {token}"
+    }
+    
+    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines?api-version={API_VERSION}"
+    payload = {
         "name": f"pipeline-{client_name}",
         "configuration": {
             "type": "yaml",
@@ -100,13 +98,22 @@ def create_pipeline(client, client_name, yaml_path, repo_id):
         }
     }
     
-    pipeline = pipeline_client.create_pipeline(pipeline_config, PROJECT)
-    return pipeline.id
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+    return response.json()["id"]
 
-def run_pipeline(client, pipeline_id, parameters):
-    pipeline_client = client.clients.get_pipeline_client()
+def run_pipeline(connection, pipeline_id, parameters):
+    # Use REST API for pipeline run
+    credentials = connection.config.credentials
+    token = credentials.password
     
-    run_parameters = {
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Basic {token}"
+    }
+    
+    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/{pipeline_id}/runs?api-version={API_VERSION}"
+    payload = {
         "resources": {
             "repositories": {
                 "self": {
@@ -117,33 +124,54 @@ def run_pipeline(client, pipeline_id, parameters):
         "templateParameters": parameters
     }
     
-    run = pipeline_client.run_pipeline(run_parameters, PROJECT, pipeline_id)
-    return run
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+    return response.json()
 
 def manage_client_pipeline(client_name, yaml_content, parameters, branch="main"):
     # Get authenticated client
-    client = get_azure_devops_client()
+    connection = get_azure_devops_client()
     
     yaml_path = f"clients/{client_name}/azure-pipelines.yml"
-    repo_id = get_repo_id(client)
+    repo_id = get_repo_id(connection)
 
     # Step 1: Add or Update YAML
-    create_or_update_yaml(client, repo_id, branch, yaml_path, yaml_content)
+    create_or_update_yaml(connection, repo_id, branch, yaml_path, yaml_content)
 
     # Step 2: Check if pipeline exists
-    existing = get_existing_pipelines(client)
-    if f"pipeline-{client_name}" in existing:
-        pipeline_id = existing[f"pipeline-{client_name}"]
+    existing = get_existing_pipelines(connection)
+    pipeline_name = f"pipeline-{client_name}"
+    
+    if pipeline_name in existing:
+        pipeline_id = existing[pipeline_name]
+        st.info(f"Using existing pipeline: {pipeline_name} (ID: {pipeline_id})")
     else:
-        pipeline_id = create_pipeline(client, client_name, yaml_path, repo_id)
+        pipeline_id = create_pipeline(connection, client_name, yaml_path, repo_id)
+        st.info(f"Created new pipeline: {pipeline_name} (ID: {pipeline_id})")
 
     # Step 3: Trigger pipeline
-    run_response = run_pipeline(client, pipeline_id, parameters)
+    run_response = run_pipeline(connection, pipeline_id, parameters)
     return run_response
 
 # Streamlit UI
 if __name__ == "__main__":
     st.title("Trigger Azure DevOps Pipeline")
+
+    # Service Principal credentials input (you might want to use st.secrets in production)
+    with st.expander("Azure Service Principal Configuration"):
+        TENANT_ID = st.text_input("Azure AD Tenant ID", type="password")
+        CLIENT_ID = st.text_input("Service Principal Client ID", type="password")
+        CLIENT_SECRET = st.text_input("Service Principal Secret", type="password")
+        
+        # Azure DevOps details
+        AZURE_ORG = st.text_input("Azure DevOps Organization")
+        PROJECT = st.text_input("Azure DevOps Project")
+        REPO_NAME = st.text_input("Repository Name")
+        
+        if TENANT_ID and CLIENT_ID and CLIENT_SECRET and AZURE_ORG and PROJECT and REPO_NAME:
+            st.success("Service Principal configuration complete")
+        else:
+            st.warning("Please fill in all Service Principal and Azure DevOps details")
 
     # User input fields
     terraform_version = st.text_input("Terraform Version", "1.6.6")
@@ -157,20 +185,23 @@ if __name__ == "__main__":
     vm_image = st.selectbox("VM Image", ["ubuntu-latest", "windows-latest"])
     
     if st.button("Run Azure DevOps Pipeline"):
-        # Parameters to send
-        parameters = {
-            "terraform_version": terraform_version,
-            "client_directory_name": client_directory_name,
-            "environment": environment,
-            "service_connection_name": service_connection_name,
-            "resource_group": resource_group,
-            "storage_account": storage_account,
-            "container_name": container_name,
-            "backend_key": backend_key,
-            "vm_image": vm_image
-        }
-        client = parameters['client_directory_name']
-        yaml_template = """
+        if not (TENANT_ID and CLIENT_ID and CLIENT_SECRET and AZURE_ORG and PROJECT and REPO_NAME):
+            st.error("Please configure the Service Principal and Azure DevOps details first")
+        else:
+            # Parameters to send
+            parameters = {
+                "terraform_version": terraform_version,
+                "client_directory_name": client_directory_name,
+                "environment": environment,
+                "service_connection_name": service_connection_name,
+                "resource_group": resource_group,
+                "storage_account": storage_account,
+                "container_name": container_name,
+                "backend_key": backend_key,
+                "vm_image": vm_image
+            }
+            client = parameters['client_directory_name']
+            yaml_template = """
 trigger:
   branches:
     include:
@@ -245,11 +276,19 @@ stages:
               workingDirectory: '$(terraformWorkingDirectory)'
               environmentServiceNameAzureRM: ${{ parameters.service_connection_name }}
               commandOptions: '-var-file="environments/${{ parameters.environment }}.tfvars"'
-        """
-        
-        try:
-            result = manage_client_pipeline(client, yaml_template, parameters)
-            st.success(f"Pipeline triggered successfully!")
-            st.write(f"Pipeline URL: {result.url}")
-        except Exception as e:
-            st.error(f"Error triggering pipeline: {str(e)}")
+            """
+            
+            with st.spinner("Creating/updating YAML and triggering pipeline..."):
+                try:
+                    result = manage_client_pipeline(client, yaml_template, parameters)
+                    st.success("Pipeline triggered successfully!")
+                    
+                    # Display pipeline details
+                    st.subheader("Pipeline Run Details")
+                    st.json(result)
+                    
+                    if "url" in result:
+                        st.markdown(f"[View Pipeline Run]({result['url']})")
+                except Exception as e:
+                    st.error(f"Error triggering pipeline: {str(e)}")
+                    st.exception(e)
