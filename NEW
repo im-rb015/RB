@@ -1,489 +1,3 @@
-import requests
-import json
-import os
-import base64
-import time
-import re
-from azure.identity import ClientSecretCredential
-import streamlit as st
-import pandas as pd
-import altair as alt
-from jinja2 import Template
-
-# Service Principal credentials - hardcoded (replace with your actual values)
-TENANT_ID = "your-tenant-id"  # Azure AD tenant ID
-CLIENT_ID = "your-client-id"  # Service Principal client/app ID
-CLIENT_SECRET = "your-client-secret"  # Service Principal secret
-
-# Azure DevOps details
-AZURE_ORG = "your-azure-org"
-PROJECT = "your-project"
-REPO_NAME = "your-repo-name"
-AZURE_DEVOPS_URL = f"https://dev.azure.com/{AZURE_ORG}"
-API_VERSION = "7.0"
-
-def get_access_token():
-    """Get an access token for Azure DevOps using Service Principal"""
-    credential = ClientSecretCredential(
-        tenant_id=TENANT_ID,
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET
-    )
-    
-    # Get token for Azure DevOps
-    token = credential.get_token("499b84ac-1321-427f-aa17-267ca6975798/.default")
-    return token.token
-
-def get_headers():
-    """Get headers with authentication token"""
-    token = get_access_token()
-    auth_str = f":{token}"
-    encoded_auth = base64.b64encode(auth_str.encode()).decode()
-    
-    return {
-        "Content-Type": "application/json",
-        "Authorization": f"Basic {encoded_auth}"
-    }
-
-def get_repo_id():
-    """Get repository ID using REST API"""
-    headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/git/repositories/{REPO_NAME}?api-version={API_VERSION}"
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    return response.json()["id"]
-
-def get_existing_pipelines():
-    """Get existing pipelines using REST API"""
-    headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines?api-version={API_VERSION}"
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    return {pipe['name']: pipe['id'] for pipe in response.json().get('value', [])}
-
-def get_last_commit_id(repo_id, branch):
-    """Get the last commit ID for a branch"""
-    headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/git/repositories/{repo_id}/refs?filter=heads/{branch}&api-version={API_VERSION}"
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    refs = response.json().get("value", [])
-    if not refs:
-        raise Exception("Branch not found or has no commits")
-    return refs[0]["objectId"]
-
-def create_or_update_yaml(repo_id, branch, yaml_path, content):
-    """Create or update YAML file in repository"""
-    headers = get_headers()
-    
-    # Check if file exists
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/git/repositories/{repo_id}/items?path={yaml_path}&versionDescriptor.version={branch}&includeContentMetadata=true&api-version={API_VERSION}"
-    response = requests.get(url, headers=headers)
-    is_update = response.status_code == 200
-    
-    # Get last commit ID
-    last_commit_id = get_last_commit_id(repo_id, branch)
-    
-    # Create push with changes
-    commit_url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/git/repositories/{repo_id}/pushes?api-version={API_VERSION}"
-    commit_payload = {
-        "refUpdates": [
-            {"name": f"refs/heads/{branch}", "oldObjectId": last_commit_id}
-        ],
-        "commits": [
-            {
-                "comment": f"{'Update' if is_update else 'Add'} YAML for pipeline",
-                "changes": [
-                    {
-                        "changeType": "edit" if is_update else "add",
-                        "item": {"path": f"/{yaml_path}"},
-                        "newContent": {"content": content, "contentType": "rawtext"}
-                    }
-                ]
-            }
-        ]
-    }
-    
-    commit_response = requests.post(commit_url, headers=headers, json=commit_payload)
-    commit_response.raise_for_status()
-    return commit_response.json()
-
-def create_pipeline(client_name, yaml_path, repo_id):
-    """Create a new pipeline"""
-    headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines?api-version={API_VERSION}"
-    payload = {
-        "name": f"pipeline-{client_name}",
-        "configuration": {
-            "type": "yaml",
-            "path": f"/{yaml_path}",
-            "repository": {
-                "id": repo_id,
-                "name": REPO_NAME,
-                "type": "azureReposGit"
-            }
-        }
-    }
-    
-    response = requests.post(url, headers=headers, json=payload)
-    response.raise_for_status()
-    return response.json()["id"]
-
-def run_pipeline(pipeline_id, parameters):
-    """Run a pipeline with parameters"""
-    headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/{pipeline_id}/runs?api-version={API_VERSION}"
-    payload = {
-        "resources": {
-            "repositories": {
-                "self": {
-                    "refName": "refs/heads/main"
-                }
-            }
-        },
-        "templateParameters": parameters
-    }
-    
-    response = requests.post(url, headers=headers, json=payload)
-    response.raise_for_status()
-    
-    run_response = response.json()
-    
-    # Extract the build ID from the URL in the response
-    if '_links' in run_response and 'web' in run_response.get('_links', {}):
-        web_url = run_response['_links']['web']['href']
-        build_id_match = re.search(r'buildId=(\d+)', web_url)
-        if build_id_match:
-            build_id = build_id_match.group(1)
-            st.session_state.build_id = build_id
-            print(f"Extracted build ID: {build_id}")
-    
-    return run_response
-
-def get_build(build_id):
-    """Get details of a build"""
-    headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/build/builds/{build_id}?api-version={API_VERSION}"
-    
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    return response.json()
-
-def get_build_logs(build_id):
-    """Get logs from a build"""
-    headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/build/builds/{build_id}/logs?api-version={API_VERSION}"
-    
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    
-    logs_info = response.json()
-    
-    # Get each log
-    detailed_logs = []
-    for log_index, log in enumerate(logs_info.get('value', [])):
-        log_id = log.get('id', log_index + 1)
-        log_url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/build/builds/{build_id}/logs/{log_id}?api-version={API_VERSION}"
-        log_response = requests.get(log_url, headers=headers)
-        if log_response.status_code == 200:
-            detailed_logs.append({
-                'id': log_id,
-                'name': log.get('name', f"Log {log_id}"),
-                'content': log_response.text
-            })
-    
-    return detailed_logs
-
-def parse_terraform_logs(logs):
-    """Parse Terraform logs to extract resource information"""
-    resources = []
-    
-    # Patterns to look for in Terraform logs
-    create_pattern = r'[\+] ([\w_]+).([\w_]+) "([\w-]+)"'
-    update_pattern = r'[~] ([\w_]+).([\w_]+) "([\w-]+)"'
-    destroy_pattern = r'[-] ([\w_]+).([\w_]+) "([\w-]+)"'
-    complete_pattern = r'([\w_]+).([\w_]+): (Creation|Modification|Destruction) complete'
-    error_pattern = r'Error: (.*?)(?=\n\n|\Z)'
-    
-    for log in logs:
-        content = log.get('content', '')
-        
-        # Find resources being created
-        for match in re.finditer(create_pattern, content):
-            provider, resource_type, name = match.groups()
-            resources.append({
-                'provider': provider,
-                'type': resource_type,
-                'name': name,
-                'action': 'Create',
-                'status': 'In Progress'
-            })
-        
-        # Find resources being updated
-        for match in re.finditer(update_pattern, content):
-            provider, resource_type, name = match.groups()
-            resources.append({
-                'provider': provider,
-                'type': resource_type,
-                'name': name,
-                'action': 'Update',
-                'status': 'In Progress'
-            })
-        
-        # Find resources being destroyed
-        for match in re.finditer(destroy_pattern, content):
-            provider, resource_type, name = match.groups()
-            resources.append({
-                'provider': provider,
-                'type': resource_type,
-                'name': name,
-                'action': 'Destroy',
-                'status': 'In Progress'
-            })
-        
-        # Find completed actions
-        for match in re.finditer(complete_pattern, content):
-            provider, resource_type, action = match.groups()
-            
-            # Update status for matching resources
-            for resource in resources:
-                if resource['provider'] == provider and resource['type'] == resource_type:
-                    resource['status'] = 'Completed'
-        
-        # Find errors
-        for match in re.finditer(error_pattern, content, re.DOTALL):
-            error_msg = match.group(1).strip()
-            
-            # Try to associate errors with resources
-            for resource in resources:
-                resource_id = f"{resource['provider']}.{resource['type']}.{resource['name']}"
-                if resource_id in error_msg:
-                    resource['status'] = 'Failed'
-                    resource['error'] = error_msg
-    
-    return resources
-
-def categorize_azure_resources(resources):
-    """Categorize resources by Azure service type"""
-    service_mapping = {
-        'storage_account': 'Storage',
-        'cosmosdb_account': 'Cosmos DB',
-        'kubernetes_cluster': 'AKS',
-        'app_service': 'App Service',
-        'function_app': 'Functions',
-        'sql_server': 'SQL Server',
-        'virtual_network': 'VNet',
-        'virtual_machine': 'VM',
-        'key_vault': 'Key Vault',
-        'container_registry': 'Container Registry',
-        'eventhub': 'Event Hub',
-        'servicebus': 'Service Bus',
-        'api_management': 'API Management',
-        'redis_cache': 'Redis Cache',
-        # Add more mappings as needed
-    }
-    
-    services = {}
-    
-    for resource in resources:
-        # Try to map to a service category
-        service_category = 'Other'
-        for key, value in service_mapping.items():
-            if key in resource['type']:
-                service_category = value
-                break
-        
-        # Add to services dictionary
-        if service_category not in services:
-            services[service_category] = {
-                'count': 0,
-                'resources': [],
-                'status': 'In Progress'
-            }
-        
-        services[service_category]['count'] += 1
-        services[service_category]['resources'].append(resource)
-        
-        # Update service status based on resources
-        if any(r.get('status') == 'Failed' for r in services[service_category]['resources']):
-            services[service_category]['status'] = 'Failed'
-        elif all(r.get('status') == 'Completed' for r in services[service_category]['resources']):
-            services[service_category]['status'] = 'Completed'
-    
-    return services
-
-def monitor_pipeline(build_id):
-    """Monitor a pipeline run and display progress"""
-    st.title("Pipeline Deployment Monitor")
-    
-    # Create placeholders for updating content
-    header = st.empty()
-    status = st.empty()
-    progress_bar = st.progress(0)
-    
-    # Create columns for metrics
-    col1, col2, col3, col4 = st.columns(4)
-    metric1 = col1.empty()  # Total Resources
-    metric2 = col2.empty()  # Completed
-    metric3 = col3.empty()  # In Progress
-    metric4 = col4.empty()  # Failed
-    
-    # Create tabs for different views
-    tab1, tab2, tab3 = st.tabs(["Services Overview", "Resource Details", "Logs"])
-    
-    with tab1:
-        chart_placeholder = st.empty()
-        services_table = st.empty()
-    
-    with tab2:
-        resources_table = st.empty()
-    
-    with tab3:
-        logs_expander = st.expander("View Raw Logs", expanded=False)
-        logs_text = logs_expander.empty()
-    
-    # Monitor the pipeline
-    completed = False
-    attempts = 0
-    max_attempts = 60
-    
-    while not completed and attempts < max_attempts:
-        # Get current status
-        try:
-            build_data = get_build(build_id)
-            build_status = build_data.get('status', 'unknown')
-            build_result = build_data.get('result', '')
-            
-            # Update header and status
-            if build_result:
-                header.header(f"Build Status: {build_status.title()} - Result: {build_result.title()}")
-            else:
-                header.header(f"Build Status: {build_status.title()}")
-            
-            # Get logs and parse resources
-            logs = get_build_logs(build_id)
-            resources = parse_terraform_logs(logs)
-            services = categorize_azure_resources(resources)
-            
-            # Update metrics
-            total_resources = len(resources)
-            completed_resources = sum(1 for r in resources if r.get('status') == 'Completed')
-            failed_resources = sum(1 for r in resources if r.get('status') == 'Failed')
-            in_progress_resources = total_resources - completed_resources - failed_resources
-            
-            metric1.metric("Total Resources", total_resources)
-            metric2.metric("Completed", completed_resources, delta=None if attempts == 0 else 1 if completed_resources > 0 else 0)
-            metric3.metric("In Progress", in_progress_resources)
-            metric4.metric("Failed", failed_resources, delta_color="inverse")
-            
-            # Update progress bar
-            if total_resources > 0:
-                progress_percentage = int((completed_resources / total_resources) * 100)
-                progress_bar.progress(progress_percentage)
-                status.info(f"Deploying... {completed_resources}/{total_resources} resources completed")
-            
-            # Update services overview
-            with tab1:
-                # Create data for chart
-                chart_data = []
-                for service_name, service_info in services.items():
-                    chart_data.append({
-                        'Service': service_name,
-                        'Count': service_info['count'],
-                        'Status': service_info['status']
-                    })
-                
-                if chart_data:
-                    df = pd.DataFrame(chart_data)
-                    
-                    # Create chart
-                    chart = alt.Chart(df).mark_bar().encode(
-                        x='Service',
-                        y='Count',
-                        color=alt.Color('Status', scale=alt.Scale(
-                            domain=['In Progress', 'Completed', 'Failed'],
-                            range=['#1E88E5', '#4CAF50', '#E53935']
-                        ))
-                    ).properties(
-                        title='Azure Services Being Deployed'
-                    )
-                    
-                    chart_placeholder.altair_chart(chart, use_container_width=True)
-                    services_table.dataframe(df)
-            
-            # Update resources table
-            with tab2:
-                if resources:
-                    resources_df = pd.DataFrame([
-                        {
-                            'Provider': r['provider'],
-                            'Type': r['type'],
-                            'Name': r['name'],
-                            'Action': r['action'],
-                            'Status': r['status'],
-                            'Error': r.get('error', '')
-                        }
-                        for r in resources
-                    ])
-                    resources_table.dataframe(resources_df)
-            
-            # Update logs
-            with tab3:
-                log_text = ""
-                for log in logs:
-                    log_text += f"--- {log.get('name', 'Log')} ---\n"
-                    log_text += log.get('content', 'No content')
-                    log_text += "\n\n"
-                
-                logs_text.text_area("Pipeline Logs", log_text, height=400)
-            
-            # Check if build is completed
-            if build_status.lower() in ['completed']:
-                progress_bar.progress(100)
-                if build_result.lower() == 'succeeded':
-                    status.success("Deployment completed successfully!")
-                else:
-                    status.error(f"Deployment {build_result}!")
-                completed = True
-            
-            # Wait before checking again
-            if not completed:
-                time.sleep(10)
-                attempts += 1
-                
-        except Exception as e:
-            status.error(f"Error monitoring pipeline: {str(e)}")
-            time.sleep(10)
-            attempts += 1
-    
-    if attempts >= max_attempts and not completed:
-        status.warning("Monitoring timed out. Pipeline may still be running.")
-    
-    return build_status, resources, services
-
-def manage_client_pipeline(client_name, yaml_content, parameters, branch="main"):
-    """Manage the entire pipeline process"""
-    yaml_path = f"clients/{client_name}/azure-pipelines.yml"
-    repo_id = get_repo_id()
-
-    # Step 1: Add or Update YAML
-    create_or_update_yaml(repo_id, branch, yaml_path, yaml_content)
-
-    # Step 2: Check if pipeline exists
-    existing = get_existing_pipelines()
-    pipeline_name = f"pipeline-{client_name}"
-    
-    if pipeline_name in existing:
-        pipeline_id = existing[pipeline_name]
-        print(f"Using existing pipeline: {pipeline_name} (ID: {pipeline_id})")
-    else:
-        pipeline_id = create_pipeline(client_name, yaml_path, repo_id)
-        print(f"Created new pipeline: {pipeline_name} (ID: {pipeline_id})")
-
-    # Step 3: Trigger pipeline
-    run_response = run_pipeline(pipeline_id, parameters)
-    
-    return run_response
 # Streamlit UI
 if __name__ == "__main__":
     st.set_page_config(page_title="Azure DevOps Pipeline", layout="wide")
@@ -509,7 +23,9 @@ if __name__ == "__main__":
         backend_key = st.text_input("Backend Key", "my-backend-key")
         vm_image = st.selectbox("VM Image", ["ubuntu-latest", "windows-latest"])
         
-        if st.button("Run Azure DevOps Pipeline"):
+        trigger_button = st.button("Run Azure DevOps Pipeline")
+        
+        if trigger_button:
             # Parameters to send
             parameters = {
                 "terraform_version": terraform_version,
@@ -617,52 +133,70 @@ stages:
                     if "url" in result:
                         st.markdown(f"[View Pipeline Run in Azure DevOps]({result['url']})")
                     
-                    # Show option to monitor the pipeline
-                    if st.button("Monitor Pipeline Progress"):
-                        if 'build_id' in st.session_state and st.session_state.build_id:
-                            monitor_pipeline(st.session_state.build_id)
-                        else:
-                            st.error("No build ID found. Please check the pipeline response or enter a build ID manually.")
+                    # Store a flag to indicate we should show the monitor button
+                    st.session_state.show_monitor_button = True
                 except Exception as e:
                     st.error(f"Error triggering pipeline: {str(e)}")
                     st.exception(e)
+        
+        # Show monitor button after pipeline is triggered
+        if 'show_monitor_button' in st.session_state and st.session_state.show_monitor_button:
+            if st.button("Monitor Pipeline Progress"):
+                if 'build_id' in st.session_state and st.session_state.build_id:
+                    # Set a flag to switch to monitoring page
+                    st.session_state.page = "Monitor Pipeline"
+                    st.session_state.monitor_build_id = st.session_state.build_id
+                    st.experimental_rerun()
+                else:
+                    st.error("No build ID found. Please check the pipeline response or enter a build ID manually.")
     
     elif page == "Monitor Pipeline":
         st.title("Monitor Pipeline Progress")
         
-        # Option to enter a build ID manually or use the one from session state
-        use_existing = st.checkbox("Use last triggered build", value=True if 'last_build_id' in st.session_state else False)
-        
-        if use_existing and 'last_build_id' in st.session_state:
-            build_id = st.session_state.last_build_id
-            st.info(f"Using build ID: {build_id}")
+        # Check if we have a build ID from the trigger page
+        if 'monitor_build_id' in st.session_state:
+            build_id = st.session_state.monitor_build_id
+            st.info(f"Monitoring build ID: {build_id}")
+            # Clear the flag so we don't automatically monitor on page refresh
+            del st.session_state.monitor_build_id
+            # Start monitoring immediately
+            monitor_pipeline(build_id)
         else:
-            build_id = st.text_input("Enter Build ID")
+            # Option to enter a build ID manually or use the one from session state
+            use_existing = st.checkbox("Use last triggered build", value=True if 'last_build_id' in st.session_state else False)
             
-            # Add a helper to explain where to find the build ID
-            st.markdown("""
-            **Where to find the Build ID:**
-            1. Go to your Azure DevOps pipeline run
-            2. Look at the URL, it will contain something like `/_build/results?buildId=12345`
-            3. The number after `buildId=` is your Build ID
-            """)
-        
-        if st.button("Start Monitoring"):
-            if build_id:
-                try:
-                    # Verify the build exists before monitoring
-                    with st.spinner("Verifying build..."):
-                        get_build(build_id)  # This will raise an error if the build doesn't exist
-                    
-                    monitor_pipeline(build_id)
-                except Exception as e:
-                    st.error(f"Error accessing build: {str(e)}")
-                    st.markdown("""
-                    **Possible reasons for this error:**
-                    - The Build ID might be incorrect
-                    - The build might have been deleted
-                    - You might not have permission to access this build
-                    - The Service Principal credentials might be incorrect
-                    """)
+            if use_existing and 'last_build_id' in st.session_state:
+                build_id = st.session_state.last_build_id
+                st.info(f"Using build ID: {build_id}")
             else:
-                st.error("Please enter a Build ID")
+                build_id = st.text_input("Enter Build ID")
+                
+                # Add a helper to explain where to find the build ID
+                st.markdown("""
+                **Where to find the Build ID:**
+                1. Go to your Azure DevOps pipeline run
+                2. Look at the URL, it will contain something like `/_build/results?buildId=12345`
+                3. The number after `buildId=` is your Build ID
+                """)
+            
+            monitor_button = st.button("Start Monitoring")
+            
+            if monitor_button:
+                if build_id:
+                    try:
+                        # Verify the build exists before monitoring
+                        with st.spinner("Verifying build..."):
+                            get_build(build_id)  # This will raise an error if the build doesn't exist
+                        
+                        monitor_pipeline(build_id)
+                    except Exception as e:
+                        st.error(f"Error accessing build: {str(e)}")
+                        st.markdown("""
+                        **Possible reasons for this error:**
+                        - The Build ID might be incorrect
+                        - The build might have been deleted
+                        - You might not have permission to access this build
+                        - The Service Principal credentials might be incorrect
+                        """)
+                else:
+                    st.error("Please enter a Build ID")
