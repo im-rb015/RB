@@ -1,3 +1,27 @@
+import requests
+import json
+import os
+import base64
+import time
+import re
+from azure.identity import ClientSecretCredential
+import streamlit as st
+import pandas as pd
+import altair as alt
+from jinja2 import Template
+
+# Service Principal credentials - hardcoded (replace with your actual values)
+TENANT_ID = "your-tenant-id"  # Azure AD tenant ID
+CLIENT_ID = "your-client-id"  # Service Principal client/app ID
+CLIENT_SECRET = "your-client-secret"  # Service Principal secret
+
+# Azure DevOps details
+AZURE_ORG = "your-azure-org"
+PROJECT = "your-project"
+REPO_NAME = "your-repo-name"
+AZURE_DEVOPS_URL = f"https://dev.azure.com/{AZURE_ORG}"
+API_VERSION = "7.0"
+
 def get_access_token():
     """Get an access token for Azure DevOps using Service Principal"""
     credential = ClientSecretCredential(
@@ -124,6 +148,304 @@ def run_pipeline(pipeline_id, parameters):
     response.raise_for_status()
     return response.json()
 
+# New functions for pipeline monitoring
+def get_pipeline_run(run_id):
+    """Get details of a pipeline run"""
+    headers = get_headers()
+    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/runs/{run_id}?api-version={API_VERSION}"
+    
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+def get_pipeline_logs(run_id):
+    """Get logs from a pipeline run"""
+    headers = get_headers()
+    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/runs/{run_id}/logs?api-version={API_VERSION}"
+    
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    
+    logs_info = response.json()
+    
+    # Get each log
+    detailed_logs = []
+    for log in logs_info.get('logs', []):
+        log_url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/runs/{run_id}/logs/{log['id']}?api-version={API_VERSION}"
+        log_response = requests.get(log_url, headers=headers)
+        if log_response.status_code == 200:
+            detailed_logs.append({
+                'id': log['id'],
+                'name': log.get('name', 'Unknown'),
+                'content': log_response.text
+            })
+    
+    return detailed_logs
+
+def parse_terraform_logs(logs):
+    """Parse Terraform logs to extract resource information"""
+    resources = []
+    
+    # Patterns to look for in Terraform logs
+    create_pattern = r'[\+] ([\w_]+).([\w_]+) "([\w-]+)"'
+    update_pattern = r'[~] ([\w_]+).([\w_]+) "([\w-]+)"'
+    destroy_pattern = r'[-] ([\w_]+).([\w_]+) "([\w-]+)"'
+    complete_pattern = r'([\w_]+).([\w_]+): (Creation|Modification|Destruction) complete'
+    error_pattern = r'Error: (.*?)(?=\n\n|\Z)'
+    
+    for log in logs:
+        content = log.get('content', '')
+        
+        # Find resources being created
+        for match in re.finditer(create_pattern, content):
+            provider, resource_type, name = match.groups()
+            resources.append({
+                'provider': provider,
+                'type': resource_type,
+                'name': name,
+                'action': 'Create',
+                'status': 'In Progress'
+            })
+        
+        # Find resources being updated
+        for match in re.finditer(update_pattern, content):
+            provider, resource_type, name = match.groups()
+            resources.append({
+                'provider': provider,
+                'type': resource_type,
+                'name': name,
+                'action': 'Update',
+                'status': 'In Progress'
+            })
+        
+        # Find resources being destroyed
+        for match in re.finditer(destroy_pattern, content):
+            provider, resource_type, name = match.groups()
+            resources.append({
+                'provider': provider,
+                'type': resource_type,
+                'name': name,
+                'action': 'Destroy',
+                'status': 'In Progress'
+            })
+        
+        # Find completed actions
+        for match in re.finditer(complete_pattern, content):
+            provider, resource_type, action = match.groups()
+            
+            # Update status for matching resources
+            for resource in resources:
+                if resource['provider'] == provider and resource['type'] == resource_type:
+                    resource['status'] = 'Completed'
+        
+        # Find errors
+        for match in re.finditer(error_pattern, content, re.DOTALL):
+            error_msg = match.group(1).strip()
+            
+            # Try to associate errors with resources
+            for resource in resources:
+                resource_id = f"{resource['provider']}.{resource['type']}.{resource['name']}"
+                if resource_id in error_msg:
+                    resource['status'] = 'Failed'
+                    resource['error'] = error_msg
+    
+    return resources
+
+def categorize_azure_resources(resources):
+    """Categorize resources by Azure service type"""
+    service_mapping = {
+        'storage_account': 'Storage',
+        'cosmosdb_account': 'Cosmos DB',
+        'kubernetes_cluster': 'AKS',
+        'app_service': 'App Service',
+        'function_app': 'Functions',
+        'sql_server': 'SQL Server',
+        'virtual_network': 'VNet',
+        'virtual_machine': 'VM',
+        'key_vault': 'Key Vault',
+        'container_registry': 'Container Registry',
+        'eventhub': 'Event Hub',
+        'servicebus': 'Service Bus',
+        'api_management': 'API Management',
+        'redis_cache': 'Redis Cache',
+        # Add more mappings as needed
+    }
+    
+    services = {}
+    
+    for resource in resources:
+        # Try to map to a service category
+        service_category = 'Other'
+        for key, value in service_mapping.items():
+            if key in resource['type']:
+                service_category = value
+                break
+        
+        # Add to services dictionary
+        if service_category not in services:
+            services[service_category] = {
+                'count': 0,
+                'resources': [],
+                'status': 'In Progress'
+            }
+        
+        services[service_category]['count'] += 1
+        services[service_category]['resources'].append(resource)
+        
+        # Update service status based on resources
+        if any(r.get('status') == 'Failed' for r in services[service_category]['resources']):
+            services[service_category]['status'] = 'Failed'
+        elif all(r.get('status') == 'Completed' for r in services[service_category]['resources']):
+            services[service_category]['status'] = 'Completed'
+    
+    return services
+
+def monitor_pipeline(run_id):
+    """Monitor a pipeline run and display progress"""
+    st.title("Pipeline Deployment Monitor")
+    
+    # Create placeholders for updating content
+    header = st.empty()
+    status = st.empty()
+    progress_bar = st.progress(0)
+    
+    # Create columns for metrics
+    col1, col2, col3, col4 = st.columns(4)
+    metric1 = col1.empty()  # Total Resources
+    metric2 = col2.empty()  # Completed
+    metric3 = col3.empty()  # In Progress
+    metric4 = col4.empty()  # Failed
+    
+    # Create tabs for different views
+    tab1, tab2, tab3 = st.tabs(["Services Overview", "Resource Details", "Logs"])
+    
+    with tab1:
+        chart_placeholder = st.empty()
+        services_table = st.empty()
+    
+    with tab2:
+        resources_table = st.empty()
+    
+    with tab3:
+        logs_expander = st.expander("View Raw Logs", expanded=False)
+        logs_text = logs_expander.empty()
+    
+    # Monitor the pipeline
+    completed = False
+    attempts = 0
+    max_attempts = 60
+    
+    while not completed and attempts < max_attempts:
+        # Get current status
+        try:
+            run_data = get_pipeline_run(run_id)
+            run_state = run_data.get('state', 'unknown')
+            
+            # Update header and status
+            header.header(f"Deployment Status: {run_state.title()}")
+            
+            # Get logs and parse resources
+            logs = get_pipeline_logs(run_id)
+            resources = parse_terraform_logs(logs)
+            services = categorize_azure_resources(resources)
+            
+            # Update metrics
+            total_resources = len(resources)
+            completed_resources = sum(1 for r in resources if r.get('status') == 'Completed')
+            failed_resources = sum(1 for r in resources if r.get('status') == 'Failed')
+            in_progress_resources = total_resources - completed_resources - failed_resources
+            
+            metric1.metric("Total Resources", total_resources)
+            metric2.metric("Completed", completed_resources, delta=None if attempts == 0 else 1 if completed_resources > 0 else 0)
+            metric3.metric("In Progress", in_progress_resources)
+            metric4.metric("Failed", failed_resources, delta_color="inverse")
+            
+            # Update progress bar
+            if total_resources > 0:
+                progress_percentage = int((completed_resources / total_resources) * 100)
+                progress_bar.progress(progress_percentage)
+                status.info(f"Deploying... {completed_resources}/{total_resources} resources completed")
+            
+            # Update services overview
+            with tab1:
+                # Create data for chart
+                chart_data = []
+                for service_name, service_info in services.items():
+                    chart_data.append({
+                        'Service': service_name,
+                        'Count': service_info['count'],
+                        'Status': service_info['status']
+                    })
+                
+                if chart_data:
+                    df = pd.DataFrame(chart_data)
+                    
+                    # Create chart
+                    chart = alt.Chart(df).mark_bar().encode(
+                        x='Service',
+                        y='Count',
+                        color=alt.Color('Status', scale=alt.Scale(
+                            domain=['In Progress', 'Completed', 'Failed'],
+                            range=['#1E88E5', '#4CAF50', '#E53935']
+                        ))
+                    ).properties(
+                        title='Azure Services Being Deployed'
+                    )
+                    
+                    chart_placeholder.altair_chart(chart, use_container_width=True)
+                    services_table.dataframe(df)
+            
+            # Update resources table
+            with tab2:
+                if resources:
+                    resources_df = pd.DataFrame([
+                        {
+                            'Provider': r['provider'],
+                            'Type': r['type'],
+                            'Name': r['name'],
+                            'Action': r['action'],
+                            'Status': r['status'],
+                            'Error': r.get('error', '')
+                        }
+                        for r in resources
+                    ])
+                    resources_table.dataframe(resources_df)
+            
+            # Update logs
+            with tab3:
+                log_text = ""
+                for log in logs:
+                    log_text += f"--- {log.get('name', 'Log')} ---\n"
+                    log_text += log.get('content', 'No content')
+                    log_text += "\n\n"
+                
+                logs_text.text_area("Pipeline Logs", log_text, height=400)
+            
+            # Check if pipeline is completed
+            if run_state in ['completed', 'succeeded']:
+                progress_bar.progress(100)
+                status.success("Deployment completed successfully!")
+                completed = True
+            elif run_state in ['failed', 'canceled']:
+                progress_bar.progress(100)
+                status.error(f"Deployment {run_state}!")
+                completed = True
+            
+            # Wait before checking again
+            if not completed:
+                time.sleep(10)
+                attempts += 1
+                
+        except Exception as e:
+            status.error(f"Error monitoring pipeline: {str(e)}")
+            time.sleep(10)
+            attempts += 1
+    
+    if attempts >= max_attempts and not completed:
+        status.warning("Monitoring timed out. Pipeline may still be running.")
+    
+    return run_state, resources, services
+
 def manage_client_pipeline(client_name, yaml_content, parameters, branch="main"):
     """Manage the entire pipeline process"""
     yaml_path = f"clients/{client_name}/azure-pipelines.yml"
@@ -145,38 +467,53 @@ def manage_client_pipeline(client_name, yaml_content, parameters, branch="main")
 
     # Step 3: Trigger pipeline
     run_response = run_pipeline(pipeline_id, parameters)
+    
+    # Store run ID in session state for monitoring
+    if 'id' in run_response:
+        st.session_state.run_id = run_response['id']
+    
     return run_response
 
 # Streamlit UI
 if __name__ == "__main__":
-    st.title("Trigger Azure DevOps Pipeline")
-
-    # User input fields
-    terraform_version = st.text_input("Terraform Version", "1.6.6")
-    client_directory_name = st.text_input("Client Directory Name", "client-vinod")
-    environment = st.selectbox("Environment", ["dev", "prod"])
-    service_connection_name = st.text_input("Service Connection Name", "my-service-connection")
-    resource_group = st.text_input("Resource Group", "my-resource-group")
-    storage_account = st.text_input("Storage Account", "mystorageaccount")
-    container_name = st.text_input("Container Name", "mycontainer")
-    backend_key = st.text_input("Backend Key", "my-backend-key")
-    vm_image = st.selectbox("VM Image", ["ubuntu-latest", "windows-latest"])
+    st.set_page_config(page_title="Azure DevOps Pipeline", layout="wide")
     
-    if st.button("Run Azure DevOps Pipeline"):
-        # Parameters to send
-        parameters = {
-            "terraform_version": terraform_version,
-            "client_directory_name": client_directory_name,
-            "environment": environment,
-            "service_connection_name": service_connection_name,
-            "resource_group": resource_group,
-            "storage_account": storage_account,
-            "container_name": container_name,
-            "backend_key": backend_key,
-            "vm_image": vm_image
-        }
-        client = parameters['client_directory_name']
-        yaml_template = """
+    # Initialize session state for run_id if not exists
+    if 'run_id' not in st.session_state:
+        st.session_state.run_id = None
+    
+    # Create sidebar for navigation
+    page = st.sidebar.radio("Navigation", ["Trigger Pipeline", "Monitor Pipeline"])
+    
+    if page == "Trigger Pipeline":
+        st.title("Trigger Azure DevOps Pipeline")
+
+        # User input fields
+        terraform_version = st.text_input("Terraform Version", "1.6.6")
+        client_directory_name = st.text_input("Client Directory Name", "client-vinod")
+        environment = st.selectbox("Environment", ["dev", "prod"])
+        service_connection_name = st.text_input("Service Connection Name", "my-service-connection")
+        resource_group = st.text_input("Resource Group", "my-resource-group")
+        storage_account = st.text_input("Storage Account", "mystorageaccount")
+        container_name = st.text_input("Container Name", "mycontainer")
+        backend_key = st.text_input("Backend Key", "my-backend-key")
+        vm_image = st.selectbox("VM Image", ["ubuntu-latest", "windows-latest"])
+        
+        if st.button("Run Azure DevOps Pipeline"):
+            # Parameters to send
+            parameters = {
+                "terraform_version": terraform_version,
+                "client_directory_name": client_directory_name,
+                "environment": environment,
+                "service_connection_name": service_connection_name,
+                "resource_group": resource_group,
+                "storage_account": storage_account,
+                "container_name": container_name,
+                "backend_key": backend_key,
+                "vm_image": vm_image
+            }
+            client = parameters['client_directory_name']
+            yaml_template = """
 trigger:
   branches:
     include:
@@ -251,19 +588,44 @@ stages:
               workingDirectory: '$(terraformWorkingDirectory)'
               environmentServiceNameAzureRM: ${{ parameters.service_connection_name }}
               commandOptions: '-var-file="environments/${{ parameters.environment }}.tfvars"'
-        """
+            """
+            
+            with st.spinner("Creating/updating YAML and triggering pipeline..."):
+                try:
+                    result = manage_client_pipeline(client, yaml_template, parameters)
+                    st.success("Pipeline triggered successfully!")
+                    
+                    # Display pipeline details
+                    st.subheader("Pipeline Run Details")
+                    st.json(result)
+                    
+                    if "url" in result:
+                        st.markdown(f"[View Pipeline Run]({result['url']})")
+                    
+                    # Show option to monitor the pipeline
+                    if st.button("Monitor Pipeline Progress"):
+                        if 'run_id' in st.session_state and st.session_state.run_id:
+                            monitor_pipeline(st.session_state.run_id)
+                        else:
+                            st.error("No pipeline run ID found. Please try again.")
+                except Exception as e:
+                    st.error(f"Error triggering pipeline: {str(e)}")
+                    st.exception(e)
+    
+    elif page == "Monitor Pipeline":
+        st.title("Monitor Pipeline Progress")
         
-        with st.spinner("Creating/updating YAML and triggering pipeline..."):
-            try:
-                result = manage_client_pipeline(client, yaml_template, parameters)
-                st.success("Pipeline triggered successfully!")
-                
-                # Display pipeline details
-                st.subheader("Pipeline Run Details")
-                st.json(result)
-                
-                if "url" in result:
-                    st.markdown(f"[View Pipeline Run]({result['url']})")
-            except Exception as e:
-                st.error(f"Error triggering pipeline: {str(e)}")
-                st.exception(e)
+        # Option to enter a run ID manually or use the one from session state
+        use_existing = st.checkbox("Use existing pipeline run", value=True if st.session_state.run_id else False)
+        
+        if use_existing and st.session_state.run_id:
+            run_id = st.session_state.run_id
+            st.info(f"Monitoring pipeline run ID: {run_id}")
+        else:
+            run_id = st.text_input("Enter Pipeline Run ID")
+        
+        if st.button("Start Monitoring"):
+            if run_id:
+                monitor_pipeline(run_id)
+            else:
+                st.error("Please enter a Pipeline Run ID")
