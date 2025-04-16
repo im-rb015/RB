@@ -146,22 +146,33 @@ def run_pipeline(pipeline_id, parameters):
     
     response = requests.post(url, headers=headers, json=payload)
     response.raise_for_status()
-    return response.json()
+    
+    run_response = response.json()
+    
+    # Extract the build ID from the URL in the response
+    if '_links' in run_response and 'web' in run_response.get('_links', {}):
+        web_url = run_response['_links']['web']['href']
+        build_id_match = re.search(r'buildId=(\d+)', web_url)
+        if build_id_match:
+            build_id = build_id_match.group(1)
+            st.session_state.build_id = build_id
+            print(f"Extracted build ID: {build_id}")
+    
+    return run_response
 
-# New functions for pipeline monitoring
-def get_pipeline_run(run_id):
-    """Get details of a pipeline run"""
+def get_build(build_id):
+    """Get details of a build"""
     headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/runs/{run_id}?api-version={API_VERSION}"
+    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/build/builds/{build_id}?api-version={API_VERSION}"
     
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     return response.json()
 
-def get_pipeline_logs(run_id):
-    """Get logs from a pipeline run"""
+def get_build_logs(build_id):
+    """Get logs from a build"""
     headers = get_headers()
-    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/runs/{run_id}/logs?api-version={API_VERSION}"
+    url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/build/builds/{build_id}/logs?api-version={API_VERSION}"
     
     response = requests.get(url, headers=headers)
     response.raise_for_status()
@@ -170,13 +181,14 @@ def get_pipeline_logs(run_id):
     
     # Get each log
     detailed_logs = []
-    for log in logs_info.get('logs', []):
-        log_url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/pipelines/runs/{run_id}/logs/{log['id']}?api-version={API_VERSION}"
+    for log_index, log in enumerate(logs_info.get('value', [])):
+        log_id = log.get('id', log_index + 1)
+        log_url = f"{AZURE_DEVOPS_URL}/{PROJECT}/_apis/build/builds/{build_id}/logs/{log_id}?api-version={API_VERSION}"
         log_response = requests.get(log_url, headers=headers)
         if log_response.status_code == 200:
             detailed_logs.append({
-                'id': log['id'],
-                'name': log.get('name', 'Unknown'),
+                'id': log_id,
+                'name': log.get('name', f"Log {log_id}"),
                 'content': log_response.text
             })
     
@@ -300,7 +312,7 @@ def categorize_azure_resources(resources):
     
     return services
 
-def monitor_pipeline(run_id):
+def monitor_pipeline(build_id):
     """Monitor a pipeline run and display progress"""
     st.title("Pipeline Deployment Monitor")
     
@@ -338,14 +350,18 @@ def monitor_pipeline(run_id):
     while not completed and attempts < max_attempts:
         # Get current status
         try:
-            run_data = get_pipeline_run(run_id)
-            run_state = run_data.get('state', 'unknown')
+            build_data = get_build(build_id)
+            build_status = build_data.get('status', 'unknown')
+            build_result = build_data.get('result', '')
             
             # Update header and status
-            header.header(f"Deployment Status: {run_state.title()}")
+            if build_result:
+                header.header(f"Build Status: {build_status.title()} - Result: {build_result.title()}")
+            else:
+                header.header(f"Build Status: {build_status.title()}")
             
             # Get logs and parse resources
-            logs = get_pipeline_logs(run_id)
+            logs = get_build_logs(build_id)
             resources = parse_terraform_logs(logs)
             services = categorize_azure_resources(resources)
             
@@ -421,14 +437,13 @@ def monitor_pipeline(run_id):
                 
                 logs_text.text_area("Pipeline Logs", log_text, height=400)
             
-            # Check if pipeline is completed
-            if run_state in ['completed', 'succeeded']:
+            # Check if build is completed
+            if build_status.lower() in ['completed']:
                 progress_bar.progress(100)
-                status.success("Deployment completed successfully!")
-                completed = True
-            elif run_state in ['failed', 'canceled']:
-                progress_bar.progress(100)
-                status.error(f"Deployment {run_state}!")
+                if build_result.lower() == 'succeeded':
+                    status.success("Deployment completed successfully!")
+                else:
+                    status.error(f"Deployment {build_result}!")
                 completed = True
             
             # Wait before checking again
@@ -444,7 +459,7 @@ def monitor_pipeline(run_id):
     if attempts >= max_attempts and not completed:
         status.warning("Monitoring timed out. Pipeline may still be running.")
     
-    return run_state, resources, services
+    return build_status, resources, services
 
 def manage_client_pipeline(client_name, yaml_content, parameters, branch="main"):
     """Manage the entire pipeline process"""
@@ -468,19 +483,14 @@ def manage_client_pipeline(client_name, yaml_content, parameters, branch="main")
     # Step 3: Trigger pipeline
     run_response = run_pipeline(pipeline_id, parameters)
     
-    # Store run ID in session state for monitoring
-    if 'id' in run_response:
-        st.session_state.run_id = run_response['id']
-    
     return run_response
-
 # Streamlit UI
 if __name__ == "__main__":
     st.set_page_config(page_title="Azure DevOps Pipeline", layout="wide")
     
-    # Initialize session state for run_id if not exists
-    if 'run_id' not in st.session_state:
-        st.session_state.run_id = None
+    # Initialize session state for build_id if not exists
+    if 'build_id' not in st.session_state:
+        st.session_state.build_id = None
     
     # Create sidebar for navigation
     page = st.sidebar.radio("Navigation", ["Trigger Pipeline", "Monitor Pipeline"])
@@ -599,15 +609,20 @@ stages:
                     st.subheader("Pipeline Run Details")
                     st.json(result)
                     
+                    # Show the build ID if we have it
+                    if 'build_id' in st.session_state and st.session_state.build_id:
+                        st.info(f"Build ID: {st.session_state.build_id}")
+                        st.session_state.last_build_id = st.session_state.build_id
+                    
                     if "url" in result:
-                        st.markdown(f"[View Pipeline Run]({result['url']})")
+                        st.markdown(f"[View Pipeline Run in Azure DevOps]({result['url']})")
                     
                     # Show option to monitor the pipeline
                     if st.button("Monitor Pipeline Progress"):
-                        if 'run_id' in st.session_state and st.session_state.run_id:
-                            monitor_pipeline(st.session_state.run_id)
+                        if 'build_id' in st.session_state and st.session_state.build_id:
+                            monitor_pipeline(st.session_state.build_id)
                         else:
-                            st.error("No pipeline run ID found. Please try again.")
+                            st.error("No build ID found. Please check the pipeline response or enter a build ID manually.")
                 except Exception as e:
                     st.error(f"Error triggering pipeline: {str(e)}")
                     st.exception(e)
@@ -615,17 +630,39 @@ stages:
     elif page == "Monitor Pipeline":
         st.title("Monitor Pipeline Progress")
         
-        # Option to enter a run ID manually or use the one from session state
-        use_existing = st.checkbox("Use existing pipeline run", value=True if st.session_state.run_id else False)
+        # Option to enter a build ID manually or use the one from session state
+        use_existing = st.checkbox("Use last triggered build", value=True if 'last_build_id' in st.session_state else False)
         
-        if use_existing and st.session_state.run_id:
-            run_id = st.session_state.run_id
-            st.info(f"Monitoring pipeline run ID: {run_id}")
+        if use_existing and 'last_build_id' in st.session_state:
+            build_id = st.session_state.last_build_id
+            st.info(f"Using build ID: {build_id}")
         else:
-            run_id = st.text_input("Enter Pipeline Run ID")
+            build_id = st.text_input("Enter Build ID")
+            
+            # Add a helper to explain where to find the build ID
+            st.markdown("""
+            **Where to find the Build ID:**
+            1. Go to your Azure DevOps pipeline run
+            2. Look at the URL, it will contain something like `/_build/results?buildId=12345`
+            3. The number after `buildId=` is your Build ID
+            """)
         
         if st.button("Start Monitoring"):
-            if run_id:
-                monitor_pipeline(run_id)
+            if build_id:
+                try:
+                    # Verify the build exists before monitoring
+                    with st.spinner("Verifying build..."):
+                        get_build(build_id)  # This will raise an error if the build doesn't exist
+                    
+                    monitor_pipeline(build_id)
+                except Exception as e:
+                    st.error(f"Error accessing build: {str(e)}")
+                    st.markdown("""
+                    **Possible reasons for this error:**
+                    - The Build ID might be incorrect
+                    - The build might have been deleted
+                    - You might not have permission to access this build
+                    - The Service Principal credentials might be incorrect
+                    """)
             else:
-                st.error("Please enter a Pipeline Run ID")
+                st.error("Please enter a Build ID")
