@@ -1,389 +1,727 @@
-2025-04-16T13:50:45.0408819Z Container image does not expose any ports. Defaulting to port 80
-2025-04-16T13:50:45.0409979Z Setting value of PORT variable to 80
-2025-04-16T13:50:45.0411609Z Creating container with image: xtrerra.azurecr.io/genaiops-backend:2755 from registry: xtrerra.azurecr.io and fully qualified image name: xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:50:45.1530754Z Starting container: 43c14965_genaiops-backend.
-2025-04-16T13:50:45.1684188Z Starting watchers and probes.
-2025-04-16T13:50:45.1687220Z Starting metrics collection.
-2025-04-16T13:50:45.1689073Z Container is running.
-2025-04-16T13:50:45.7058432Z Container start method finished after 915 ms.
-2025-04-16T13:50:46.3569188Z Container has finished running with exit code: 1.
-2025-04-16T13:50:46.3571967Z Container is terminating. Grace period: 5 seconds.
-2025-04-16T13:50:46.3576884Z Stop and delete container. Retry count = 0
-2025-04-16T13:50:46.3579223Z Stopping container: 43c14965_genaiops-backend.
-2025-04-16T13:50:46.3695085Z Deleting container: 43c14965_genaiops-backend. Retry count = 0
-2025-04-16T13:50:46.4160134Z Container spec TerminationMessagePolicy path
-2025-04-16T13:50:46.4172912Z Container is terminated. Total time elapsed: 59 ms.
-2025-04-16T13:50:46.4184217Z Site container: genaiops-backend terminated during site startup.
-2025-04-16T13:50:46.4196132Z Site startup probe failed after 0.7040491 seconds.
-2025-04-16T13:50:46.4248601Z Failed to start site. Revert by stopping site.
-2025-04-16T13:50:46.5304837Z Site: genaiops-backend will be blocked for 1 minutes till 04/16/2025 13:51:46
-2025-04-16T13:50:46.5476431Z Site: genaiops-backend stopped.
-2025-04-16T13:50:49.879Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:50:50.115Z INFO - 2755 Pulling from genaiops-backend
-2025-04-16T13:50:50.121Z INFO - 4a679ac3b09f Already exists
-2025-04-16T13:50:50.123Z INFO - 74018f7cfa8f Pulling fs layer
-2025-04-16T13:50:50.130Z INFO - a0b0cfc480ce Pulling fs layer
-2025-04-16T13:50:50.134Z INFO - 97d21b95fb00 Pulling fs layer
-2025-04-16T13:50:50.135Z INFO - 350112290db6 Pulling fs layer
-2025-04-16T13:50:50.136Z INFO - 07c8e82da438 Pulling fs layer
-2025-04-16T13:50:50.137Z INFO - 6a309cfa7206 Pulling fs layer
-2025-04-16T13:50:50.138Z INFO - 942e771df559 Pulling fs layer
-2025-04-16T13:50:50.186Z INFO - 942e771df559 Downloading 38KB / 38KB
-2025-04-16T13:50:50.187Z INFO - 942e771df559 Verifying Checksum
-2025-04-16T13:50:50.188Z INFO - 942e771df559 Download complete
-2025-04-16T13:50:50.192Z INFO - 350112290db6 Downloading 93B / 93B
-2025-04-16T13:50:50.193Z INFO - 350112290db6 Verifying Checksum
-2025-04-16T13:50:50.194Z INFO - 350112290db6 Download complete
-2025-04-16T13:50:50.220Z INFO - 97d21b95fb00 Downloading 250B / 250B
-2025-04-16T13:50:50.221Z INFO - 07c8e82da438 Downloading 274B / 274B
-2025-04-16T13:50:50.222Z INFO - 07c8e82da438 Verifying Checksum
-2025-04-16T13:50:50.223Z INFO - 07c8e82da438 Download complete
-2025-04-16T13:50:50.224Z INFO - 97d21b95fb00 Verifying Checksum
-2025-04-16T13:50:50.225Z INFO - 97d21b95fb00 Download complete
-2025-04-16T13:50:50.269Z INFO - 74018f7cfa8f Verifying Checksum
-2025-04-16T13:50:50.275Z INFO - 74018f7cfa8f Download complete
-2025-04-16T13:50:50.295Z INFO - 6a309cfa7206 Downloading 527KB / 76MB
-2025-04-16T13:50:50.338Z INFO - a0b0cfc480ce Verifying Checksum
-2025-04-16T13:50:50.343Z INFO - a0b0cfc480ce Download complete
-2025-04-16T13:50:50.512Z INFO - 6a309cfa7206 Downloading 15MB / 76MB
-2025-04-16T13:50:50.619Z INFO - 6a309cfa7206 Downloading 40MB / 76MB
-2025-04-16T13:50:50.663Z INFO - 74018f7cfa8f Extracting 3MB / 3MB
-2025-04-16T13:50:50.679Z INFO - 74018f7cfa8f Extracting 3MB / 3MB
-2025-04-16T13:50:50.692Z INFO - 74018f7cfa8f Pull complete
-2025-04-16T13:50:50.721Z INFO - 6a309cfa7206 Downloading 58MB / 76MB
-2025-04-16T13:50:50.823Z INFO - 6a309cfa7206 Downloading 75MB / 76MB
-2025-04-16T13:50:50.828Z INFO - 6a309cfa7206 Verifying Checksum
-2025-04-16T13:50:50.829Z INFO - 6a309cfa7206 Download complete
-2025-04-16T13:50:50.939Z INFO - a0b0cfc480ce Extracting 4MB / 14MB
-2025-04-16T13:50:52.737Z INFO - a0b0cfc480ce Extracting 11MB / 14MB
-2025-04-16T13:50:52.738Z INFO - a0b0cfc480ce Extracting 14MB / 14MB
-2025-04-16T13:50:52.740Z INFO - a0b0cfc480ce Pull complete
-2025-04-16T13:50:52.741Z INFO - 97d21b95fb00 Extracting 250B / 250B
-2025-04-16T13:50:52.742Z INFO - 97d21b95fb00 Extracting 250B / 250B
-2025-04-16T13:50:52.743Z INFO - 97d21b95fb00 Pull complete
-2025-04-16T13:50:52.744Z INFO - 350112290db6 Extracting 93B / 93B
-2025-04-16T13:50:52.745Z INFO - 350112290db6 Extracting 93B / 93B
-2025-04-16T13:50:52.746Z INFO - 350112290db6 Pull complete
-2025-04-16T13:50:52.747Z INFO - 07c8e82da438 Extracting 274B / 274B
-2025-04-16T13:50:52.748Z INFO - 07c8e82da438 Extracting 274B / 274B
-2025-04-16T13:50:52.749Z INFO - 07c8e82da438 Pull complete
-2025-04-16T13:50:52.751Z INFO - 6a309cfa7206 Extracting 544KB / 76MB
-2025-04-16T13:50:52.752Z INFO - 6a309cfa7206 Extracting 2MB / 76MB
-2025-04-16T13:50:52.814Z INFO - 6a309cfa7206 Extracting 4MB / 76MB
-2025-04-16T13:50:53.217Z INFO - 6a309cfa7206 Extracting 7MB / 76MB
-2025-04-16T13:50:53.328Z INFO - 6a309cfa7206 Extracting 9MB / 76MB
-2025-04-16T13:50:53.437Z INFO - 6a309cfa7206 Extracting 12MB / 76MB
-2025-04-16T13:50:53.539Z INFO - 6a309cfa7206 Extracting 13MB / 76MB
-2025-04-16T13:50:53.649Z INFO - 6a309cfa7206 Extracting 14MB / 76MB
-2025-04-16T13:50:53.762Z INFO - 6a309cfa7206 Extracting 15MB / 76MB
-2025-04-16T13:50:53.874Z INFO - 6a309cfa7206 Extracting 17MB / 76MB
-2025-04-16T13:50:53.984Z INFO - 6a309cfa7206 Extracting 20MB / 76MB
-2025-04-16T13:50:54.092Z INFO - 6a309cfa7206 Extracting 23MB / 76MB
-2025-04-16T13:50:54.327Z INFO - 6a309cfa7206 Extracting 30MB / 76MB
-2025-04-16T13:50:54.619Z INFO - 6a309cfa7206 Extracting 34MB / 76MB
-2025-04-16T13:50:54.729Z INFO - 6a309cfa7206 Extracting 35MB / 76MB
-2025-04-16T13:50:54.841Z INFO - 6a309cfa7206 Extracting 37MB / 76MB
-2025-04-16T13:50:55.131Z INFO - 6a309cfa7206 Extracting 38MB / 76MB
-2025-04-16T13:50:55.353Z INFO - 6a309cfa7206 Extracting 44MB / 76MB
-2025-04-16T13:50:55.495Z INFO - 6a309cfa7206 Extracting 47MB / 76MB
-2025-04-16T13:50:55.603Z INFO - 6a309cfa7206 Extracting 49MB / 76MB
-2025-04-16T13:50:55.906Z INFO - 6a309cfa7206 Extracting 52MB / 76MB
-2025-04-16T13:50:56.252Z INFO - 6a309cfa7206 Extracting 55MB / 76MB
-2025-04-16T13:50:56.416Z INFO - 6a309cfa7206 Extracting 56MB / 76MB
-2025-04-16T13:50:56.645Z INFO - 6a309cfa7206 Extracting 60MB / 76MB
-2025-04-16T13:50:56.892Z INFO - 6a309cfa7206 Extracting 64MB / 76MB
-2025-04-16T13:50:57.062Z INFO - 6a309cfa7206 Extracting 65MB / 76MB
-2025-04-16T13:50:57.511Z INFO - 6a309cfa7206 Extracting 70MB / 76MB
-2025-04-16T13:50:57.697Z INFO - 6a309cfa7206 Extracting 70MB / 76MB
-2025-04-16T13:50:57.805Z INFO - 6a309cfa7206 Extracting 73MB / 76MB
-2025-04-16T13:50:57.967Z INFO - 6a309cfa7206 Extracting 76MB / 76MB
-2025-04-16T13:50:58.096Z INFO - 6a309cfa7206 Pull complete
-2025-04-16T13:50:58.097Z INFO - 942e771df559 Extracting 32KB / 38KB
-2025-04-16T13:50:58.105Z INFO - 942e771df559 Extracting 38KB / 38KB
-2025-04-16T13:50:58.107Z INFO - 942e771df559 Extracting 38KB / 38KB
-2025-04-16T13:50:58.126Z INFO - 942e771df559 Pull complete
-2025-04-16T13:50:58.157Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
-2025-04-16T13:50:58.159Z INFO - Status: Downloaded newer image for xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:50:58.170Z INFO - Pull Image successful, Time taken: 8 Seconds
-2025-04-16T13:50:58.430Z INFO - Starting container for site
-2025-04-16T13:50:58.431Z INFO - docker run -d --expose=80 --name genaiops-backend_0_36ede669 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:50:58.432Z INFO - Logging is not enabled for this container.
+2025_04_16_lw0sdlwk0007DK_default_docker.log:
+2025-04-16T15:18:33.124655006Z Traceback (most recent call last):
+2025-04-16T15:18:33.132517463Z File "/usr/local/bin/uvicorn", line 8, in <module>
+2025-04-16T15:18:33.132522830Z sys.exit(main())
+2025-04-16T15:18:33.132525673Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1161, in __call__
+2025-04-16T15:18:33.132528232Z return self.main(*args, **kwargs)
+2025-04-16T15:18:33.132530907Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1082, in main
+2025-04-16T15:18:33.132533378Z rv = self.invoke(ctx)
+2025-04-16T15:18:33.132535743Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1443, in invoke
+2025-04-16T15:18:33.132538127Z return ctx.invoke(self.callback, **ctx.params)
+2025-04-16T15:18:33.132540403Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 788, in invoke
+2025-04-16T15:18:33.132542886Z return __callback(*args, **kwargs)
+2025-04-16T15:18:33.132545390Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 410, in main
+2025-04-16T15:18:33.132547878Z run(
+2025-04-16T15:18:33.132550221Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 577, in run
+2025-04-16T15:18:33.132552665Z server.run()
+2025-04-16T15:18:33.132554931Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 65, in run
+2025-04-16T15:18:33.132557290Z return asyncio.run(self.serve(sockets=sockets))
+2025-04-16T15:18:33.132559602Z File "/usr/local/lib/python3.9/asyncio/runners.py", line 44, in run
+2025-04-16T15:18:33.132562543Z return loop.run_until_complete(main)
+2025-04-16T15:18:33.132565094Z File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+2025-04-16T15:18:33.132567631Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 69, in serve
+2025-04-16T15:18:33.132570213Z await self._serve(sockets)
+2025-04-16T15:18:33.132572552Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 76, in _serve
+2025-04-16T15:18:33.132574940Z config.load()
+2025-04-16T15:18:33.132577133Z File "/usr/local/lib/python3.9/site-packages/uvicorn/config.py", line 434, in load
+2025-04-16T15:18:33.132579525Z self.loaded_app = import_from_string(self.app)
+2025-04-16T15:18:33.132581852Z File "/usr/local/lib/python3.9/site-packages/uvicorn/importer.py", line 19, in import_from_string
+2025-04-16T15:18:33.132584462Z module = importlib.import_module(module_str)
+2025-04-16T15:18:33.132586836Z File "/usr/local/lib/python3.9/importlib/__init__.py", line 127, in import_module
+2025-04-16T15:18:33.132589382Z return _bootstrap._gcd_import(name[level:], package, level)
+2025-04-16T15:18:33.132668991Z File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+2025-04-16T15:18:33.132673878Z File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+2025-04-16T15:18:33.132681828Z File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+2025-04-16T15:18:33.132684420Z File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+2025-04-16T15:18:33.132690711Z File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+2025-04-16T15:18:33.132693300Z File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+2025-04-16T15:18:33.132695812Z File "/app/app/main.py", line 10, in <module>
+2025-04-16T15:18:33.132698308Z from app.data_fetching import FetchData, process_env_variables
+2025-04-16T15:18:33.132700710Z File "/app/app/data_fetching.py", line 27, in <module>
+2025-04-16T15:18:33.132703150Z cosmos_Db_Obj = CosmoDB(cosmos_url,cosmos_key)
+2025-04-16T15:18:33.132705656Z File "/app/app/cosmos_operations.py", line 11, in __init__
+2025-04-16T15:18:33.132708144Z self.cosmos_client = CosmosClient(URL, credential=KEY)
+2025-04-16T15:18:33.132710571Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/cosmos_client.py", line 204, in __init__
+2025-04-16T15:18:33.132713149Z self.client_connection = CosmosClientConnection(
+2025-04-16T15:18:33.132715439Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 227, in __init__
+2025-04-16T15:18:33.132717962Z database_account = self._global_endpoint_manager._GetDatabaseAccount(**kwargs)
+2025-04-16T15:18:33.132720364Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 126, in _GetDatabaseAccount
+2025-04-16T15:18:33.132722875Z database_account = self._GetDatabaseAccountStub(self.DefaultEndpoint, **kwargs)
+2025-04-16T15:18:33.132725431Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 152, in _GetDatabaseAccountStub
+2025-04-16T15:18:33.132728134Z return self.Client.GetDatabaseAccount(endpoint, **kwargs)
+2025-04-16T15:18:33.132730628Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2525, in GetDatabaseAccount
+2025-04-16T15:18:33.132733207Z result, last_response_headers = self.__Get("", request_params, headers, **kwargs)
+2025-04-16T15:18:33.132735661Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2782, in __Get
+2025-04-16T15:18:33.132738255Z return synchronized_request.SynchronizedRequest(
+2025-04-16T15:18:33.132740535Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 204, in SynchronizedRequest
+2025-04-16T15:18:33.132742970Z return _retry_utility.Execute(
+2025-04-16T15:18:33.132745433Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 85, in Execute
+2025-04-16T15:18:33.132748017Z result = ExecuteFunction(function, global_endpoint_manager, *args, **kwargs)
+2025-04-16T15:18:33.132753898Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 149, in ExecuteFunction
+2025-04-16T15:18:33.132756611Z return function(*args, **kwargs)
+2025-04-16T15:18:33.132758919Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 155, in _Request
+2025-04-16T15:18:33.132761685Z raise exceptions.CosmosHttpResponseError(message=data, response=response)
+2025-04-16T15:18:33.132764104Z azure.cosmos.exceptions.CosmosHttpResponseError: (Forbidden) Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:18:33.132766840Z ActivityId: 286b05b5-8958-4246-a9de-830d49101547, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+2025-04-16T15:18:33.132769462Z Code: Forbidden
+2025-04-16T15:18:33.132771929Z Message: Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:18:33.132774607Z ActivityId: 286b05b5-8958-4246-a9de-830d49101547, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+
+2025-04-16T15:19:15.145727425Z Traceback (most recent call last):
+2025-04-16T15:19:15.155113136Z File "/usr/local/bin/uvicorn", line 8, in <module>
+2025-04-16T15:19:15.155121936Z sys.exit(main())
+2025-04-16T15:19:15.155124654Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1161, in __call__
+2025-04-16T15:19:15.155127350Z return self.main(*args, **kwargs)
+2025-04-16T15:19:15.155130207Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1082, in main
+2025-04-16T15:19:15.155132928Z rv = self.invoke(ctx)
+2025-04-16T15:19:15.155135605Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1443, in invoke
+2025-04-16T15:19:15.155138110Z return ctx.invoke(self.callback, **ctx.params)
+2025-04-16T15:19:15.155140528Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 788, in invoke
+2025-04-16T15:19:15.155143097Z return __callback(*args, **kwargs)
+2025-04-16T15:19:15.155145353Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 410, in main
+2025-04-16T15:19:15.155153961Z run(
+2025-04-16T15:19:15.155156630Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 577, in run
+2025-04-16T15:19:15.155159218Z server.run()
+2025-04-16T15:19:15.155161614Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 65, in run
+2025-04-16T15:19:15.155164121Z return asyncio.run(self.serve(sockets=sockets))
+2025-04-16T15:19:15.155166440Z File "/usr/local/lib/python3.9/asyncio/runners.py", line 44, in run
+2025-04-16T15:19:15.155168820Z return loop.run_until_complete(main)
+2025-04-16T15:19:15.155171143Z File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+2025-04-16T15:19:15.155173573Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 69, in serve
+2025-04-16T15:19:15.155176162Z await self._serve(sockets)
+2025-04-16T15:19:15.155178530Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 76, in _serve
+2025-04-16T15:19:15.155181099Z config.load()
+2025-04-16T15:19:15.155183410Z File "/usr/local/lib/python3.9/site-packages/uvicorn/config.py", line 434, in load
+2025-04-16T15:19:15.155185830Z self.loaded_app = import_from_string(self.app)
+2025-04-16T15:19:15.155188117Z File "/usr/local/lib/python3.9/site-packages/uvicorn/importer.py", line 19, in import_from_string
+2025-04-16T15:19:15.155190607Z module = importlib.import_module(module_str)
+2025-04-16T15:19:15.155192884Z File "/usr/local/lib/python3.9/importlib/__init__.py", line 127, in import_module
+2025-04-16T15:19:15.155195445Z return _bootstrap._gcd_import(name[level:], package, level)
+2025-04-16T15:19:15.155197906Z File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+2025-04-16T15:19:15.155200536Z File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+2025-04-16T15:19:15.155207322Z File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+2025-04-16T15:19:15.155209974Z File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+2025-04-16T15:19:15.155215187Z File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+2025-04-16T15:19:15.155217707Z File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+2025-04-16T15:19:15.155220217Z File "/app/app/main.py", line 10, in <module>
+2025-04-16T15:19:15.155222859Z from app.data_fetching import FetchData, process_env_variables
+2025-04-16T15:19:15.155225308Z File "/app/app/data_fetching.py", line 27, in <module>
+2025-04-16T15:19:15.155227937Z cosmos_Db_Obj = CosmoDB(cosmos_url,cosmos_key)
+2025-04-16T15:19:15.155230325Z File "/app/app/cosmos_operations.py", line 11, in __init__
+2025-04-16T15:19:15.155232713Z self.cosmos_client = CosmosClient(URL, credential=KEY)
+2025-04-16T15:19:15.155235033Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/cosmos_client.py", line 204, in __init__
+2025-04-16T15:19:15.155237447Z self.client_connection = CosmosClientConnection(
+2025-04-16T15:19:15.155239782Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 227, in __init__
+2025-04-16T15:19:15.155242410Z database_account = self._global_endpoint_manager._GetDatabaseAccount(**kwargs)
+2025-04-16T15:19:15.155244916Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 126, in _GetDatabaseAccount
+2025-04-16T15:19:15.155247556Z database_account = self._GetDatabaseAccountStub(self.DefaultEndpoint, **kwargs)
+2025-04-16T15:19:15.155249969Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 152, in _GetDatabaseAccountStub
+2025-04-16T15:19:15.155252438Z return self.Client.GetDatabaseAccount(endpoint, **kwargs)
+2025-04-16T15:19:15.155254733Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2525, in GetDatabaseAccount
+2025-04-16T15:19:15.155257199Z result, last_response_headers = self.__Get("", request_params, headers, **kwargs)
+2025-04-16T15:19:15.155259611Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2782, in __Get
+2025-04-16T15:19:15.155262233Z return synchronized_request.SynchronizedRequest(
+2025-04-16T15:19:15.155264618Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 204, in SynchronizedRequest
+2025-04-16T15:19:15.155267229Z return _retry_utility.Execute(
+2025-04-16T15:19:15.155269561Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 85, in Execute
+2025-04-16T15:19:15.155272015Z result = ExecuteFunction(function, global_endpoint_manager, *args, **kwargs)
+2025-04-16T15:19:15.173908461Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 149, in ExecuteFunction
+2025-04-16T15:19:15.173914917Z return function(*args, **kwargs)
+2025-04-16T15:19:15.173917877Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 155, in _Request
+2025-04-16T15:19:15.173920488Z raise exceptions.CosmosHttpResponseError(message=data, response=response)
+2025-04-16T15:19:15.173923087Z azure.cosmos.exceptions.CosmosHttpResponseError: (Forbidden) Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:19:15.173925917Z ActivityId: c1e6d967-1e06-4d18-9586-77446024d00d, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+2025-04-16T15:19:15.173934512Z Code: Forbidden
+2025-04-16T15:19:15.173937391Z Message: Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:19:15.173939966Z ActivityId: c1e6d967-1e06-4d18-9586-77446024d00d, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+
+2025-04-16T15:19:46.632626548Z Traceback (most recent call last):
+2025-04-16T15:19:46.632671641Z File "/usr/local/bin/uvicorn", line 8, in <module>
+2025-04-16T15:19:46.632676010Z sys.exit(main())
+2025-04-16T15:19:46.632678583Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1161, in __call__
+2025-04-16T15:19:46.632681298Z return self.main(*args, **kwargs)
+2025-04-16T15:19:46.632683718Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1082, in main
+2025-04-16T15:19:46.632949969Z rv = self.invoke(ctx)
+2025-04-16T15:19:46.632960666Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1443, in invoke
+2025-04-16T15:19:46.632963710Z return ctx.invoke(self.callback, **ctx.params)
+2025-04-16T15:19:46.632966299Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 788, in invoke
+2025-04-16T15:19:46.632968996Z return __callback(*args, **kwargs)
+2025-04-16T15:19:46.632971508Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 410, in main
+2025-04-16T15:19:46.632974258Z run(
+2025-04-16T15:19:46.632976643Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 577, in run
+2025-04-16T15:19:46.632979353Z server.run()
+2025-04-16T15:19:46.632981722Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 65, in run
+2025-04-16T15:19:46.632984303Z return asyncio.run(self.serve(sockets=sockets))
+2025-04-16T15:19:46.632986750Z File "/usr/local/lib/python3.9/asyncio/runners.py", line 44, in run
+2025-04-16T15:19:46.632989340Z return loop.run_until_complete(main)
+2025-04-16T15:19:46.632991867Z File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+2025-04-16T15:19:46.632994528Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 69, in serve
+2025-04-16T15:19:46.632997218Z await self._serve(sockets)
+2025-04-16T15:19:46.632999710Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 76, in _serve
+2025-04-16T15:19:46.633002225Z config.load()
+2025-04-16T15:19:46.633004572Z File "/usr/local/lib/python3.9/site-packages/uvicorn/config.py", line 434, in load
+2025-04-16T15:19:46.633007073Z self.loaded_app = import_from_string(self.app)
+2025-04-16T15:19:46.633009514Z File "/usr/local/lib/python3.9/site-packages/uvicorn/importer.py", line 19, in import_from_string
+2025-04-16T15:19:46.633019557Z module = importlib.import_module(module_str)
+2025-04-16T15:19:46.633023612Z File "/usr/local/lib/python3.9/importlib/__init__.py", line 127, in import_module
+2025-04-16T15:19:46.633026187Z return _bootstrap._gcd_import(name[level:], package, level)
+2025-04-16T15:19:46.633029362Z File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+2025-04-16T15:19:46.633032142Z File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+2025-04-16T15:19:46.633218814Z File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+2025-04-16T15:19:46.633224776Z File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+2025-04-16T15:19:46.633229858Z File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+2025-04-16T15:19:46.633232587Z File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+2025-04-16T15:19:46.633235093Z File "/app/app/main.py", line 10, in <module>
+2025-04-16T15:19:46.633237625Z from app.data_fetching import FetchData, process_env_variables
+2025-04-16T15:19:46.633240049Z File "/app/app/data_fetching.py", line 27, in <module>
+2025-04-16T15:19:46.633242646Z cosmos_Db_Obj = CosmoDB(cosmos_url,cosmos_key)
+2025-04-16T15:19:46.633245139Z File "/app/app/cosmos_operations.py", line 11, in __init__
+2025-04-16T15:19:46.633247677Z self.cosmos_client = CosmosClient(URL, credential=KEY)
+2025-04-16T15:19:46.633250147Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/cosmos_client.py", line 204, in __init__
+2025-04-16T15:19:46.633252868Z self.client_connection = CosmosClientConnection(
+2025-04-16T15:19:46.633255181Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 227, in __init__
+2025-04-16T15:19:46.633257659Z database_account = self._global_endpoint_manager._GetDatabaseAccount(**kwargs)
+2025-04-16T15:19:46.633260038Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 126, in _GetDatabaseAccount
+2025-04-16T15:19:46.633262852Z database_account = self._GetDatabaseAccountStub(self.DefaultEndpoint, **kwargs)
+2025-04-16T15:19:46.633265443Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 152, in _GetDatabaseAccountStub
+2025-04-16T15:19:46.633268106Z return self.Client.GetDatabaseAccount(endpoint, **kwargs)
+2025-04-16T15:19:46.633270548Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2525, in GetDatabaseAccount
+2025-04-16T15:19:46.633273242Z result, last_response_headers = self.__Get("", request_params, headers, **kwargs)
+2025-04-16T15:19:46.633275648Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2782, in __Get
+2025-04-16T15:19:46.633278118Z return synchronized_request.SynchronizedRequest(
+2025-04-16T15:19:46.633280394Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 204, in SynchronizedRequest
+2025-04-16T15:19:46.633282853Z return _retry_utility.Execute(
+2025-04-16T15:19:46.633291141Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 85, in Execute
+2025-04-16T15:19:46.633293793Z result = ExecuteFunction(function, global_endpoint_manager, *args, **kwargs)
+2025-04-16T15:19:46.633301180Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 149, in ExecuteFunction
+2025-04-16T15:19:46.633303931Z return function(*args, **kwargs)
+2025-04-16T15:19:46.633306209Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 155, in _Request
+2025-04-16T15:19:46.633308673Z raise exceptions.CosmosHttpResponseError(message=data, response=response)
+2025-04-16T15:19:46.633311092Z azure.cosmos.exceptions.CosmosHttpResponseError: (Forbidden) Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:19:46.633313995Z ActivityId: 3473cf92-e154-4264-82aa-122b6621c298, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+2025-04-16T15:19:46.633316561Z Code: Forbidden
+2025-04-16T15:19:46.633319058Z Message: Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:19:46.633321723Z ActivityId: 3473cf92-e154-4264-82aa-122b6621c298, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+
+2025-04-16T15:20:21.204435696Z Traceback (most recent call last):
+2025-04-16T15:20:21.204479124Z File "/usr/local/bin/uvicorn", line 8, in <module>
+2025-04-16T15:20:21.204483252Z sys.exit(main())
+2025-04-16T15:20:21.204485782Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1161, in __call__
+2025-04-16T15:20:21.204491123Z return self.main(*args, **kwargs)
+2025-04-16T15:20:21.204493594Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1082, in main
+2025-04-16T15:20:21.204495991Z rv = self.invoke(ctx)
+2025-04-16T15:20:21.204498245Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1443, in invoke
+2025-04-16T15:20:21.204500695Z return ctx.invoke(self.callback, **ctx.params)
+2025-04-16T15:20:21.204503007Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 788, in invoke
+2025-04-16T15:20:21.204505355Z return __callback(*args, **kwargs)
+2025-04-16T15:20:21.204507595Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 410, in main
+2025-04-16T15:20:21.204510175Z run(
+2025-04-16T15:20:21.204512478Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 577, in run
+2025-04-16T15:20:21.204514917Z server.run()
+2025-04-16T15:20:21.204517182Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 65, in run
+2025-04-16T15:20:21.204519692Z return asyncio.run(self.serve(sockets=sockets))
+2025-04-16T15:20:21.204521938Z File "/usr/local/lib/python3.9/asyncio/runners.py", line 44, in run
+2025-04-16T15:20:21.204524262Z return loop.run_until_complete(main)
+2025-04-16T15:20:21.204526510Z File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+2025-04-16T15:20:21.204529124Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 69, in serve
+2025-04-16T15:20:21.204531607Z await self._serve(sockets)
+2025-04-16T15:20:21.204533954Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 76, in _serve
+2025-04-16T15:20:21.204536416Z config.load()
+2025-04-16T15:20:21.204538901Z File "/usr/local/lib/python3.9/site-packages/uvicorn/config.py", line 434, in load
+2025-04-16T15:20:21.204541279Z self.loaded_app = import_from_string(self.app)
+2025-04-16T15:20:21.204543559Z File "/usr/local/lib/python3.9/site-packages/uvicorn/importer.py", line 19, in import_from_string
+2025-04-16T15:20:21.204546007Z module = importlib.import_module(module_str)
+2025-04-16T15:20:21.204548378Z File "/usr/local/lib/python3.9/importlib/__init__.py", line 127, in import_module
+2025-04-16T15:20:21.204550873Z return _bootstrap._gcd_import(name[level:], package, level)
+2025-04-16T15:20:21.204553242Z File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+2025-04-16T15:20:21.204555766Z File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+2025-04-16T15:20:21.204562010Z File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+2025-04-16T15:20:21.204564711Z File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+2025-04-16T15:20:21.204567806Z File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+2025-04-16T15:20:21.204570306Z File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+2025-04-16T15:20:21.204572864Z File "/app/app/main.py", line 10, in <module>
+2025-04-16T15:20:21.204575362Z from app.data_fetching import FetchData, process_env_variables
+2025-04-16T15:20:21.204577825Z File "/app/app/data_fetching.py", line 27, in <module>
+2025-04-16T15:20:21.204580337Z cosmos_Db_Obj = CosmoDB(cosmos_url,cosmos_key)
+2025-04-16T15:20:21.204582697Z File "/app/app/cosmos_operations.py", line 11, in __init__
+2025-04-16T15:20:21.204585073Z self.cosmos_client = CosmosClient(URL, credential=KEY)
+2025-04-16T15:20:21.204587394Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/cosmos_client.py", line 204, in __init__
+2025-04-16T15:20:21.204589846Z self.client_connection = CosmosClientConnection(
+2025-04-16T15:20:21.204592313Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 227, in __init__
+2025-04-16T15:20:21.204594812Z database_account = self._global_endpoint_manager._GetDatabaseAccount(**kwargs)
+2025-04-16T15:20:21.204597249Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 126, in _GetDatabaseAccount
+2025-04-16T15:20:21.204599776Z database_account = self._GetDatabaseAccountStub(self.DefaultEndpoint, **kwargs)
+2025-04-16T15:20:21.204602302Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 152, in _GetDatabaseAccountStub
+2025-04-16T15:20:21.204604781Z return self.Client.GetDatabaseAccount(endpoint, **kwargs)
+2025-04-16T15:20:21.204607390Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2525, in GetDatabaseAccount
+2025-04-16T15:20:21.204609872Z result, last_response_headers = self.__Get("", request_params, headers, **kwargs)
+2025-04-16T15:20:21.204612394Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2782, in __Get
+2025-04-16T15:20:21.204614925Z return synchronized_request.SynchronizedRequest(
+2025-04-16T15:20:21.204617268Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 204, in SynchronizedRequest
+2025-04-16T15:20:21.204619804Z return _retry_utility.Execute(
+2025-04-16T15:20:21.204622116Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 85, in Execute
+2025-04-16T15:20:21.204624576Z result = ExecuteFunction(function, global_endpoint_manager, *args, **kwargs)
+2025-04-16T15:20:21.204630087Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 149, in ExecuteFunction
+2025-04-16T15:20:21.204632678Z return function(*args, **kwargs)
+2025-04-16T15:20:21.204635046Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 155, in _Request
+2025-04-16T15:20:21.204637578Z raise exceptions.CosmosHttpResponseError(message=data, response=response)
+2025-04-16T15:20:21.204640030Z azure.cosmos.exceptions.CosmosHttpResponseError: (Forbidden) Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:20:21.204643081Z ActivityId: 23efbcff-d7ae-4339-9c17-aeec90cf7458, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+2025-04-16T15:20:21.204645777Z Code: Forbidden
+2025-04-16T15:20:21.204648038Z Message: Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:20:21.204650875Z ActivityId: 23efbcff-d7ae-4339-9c17-aeec90cf7458, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+
+2025-04-16T15:23:13.947109589Z Traceback (most recent call last):
+2025-04-16T15:23:13.947144983Z File "/usr/local/bin/uvicorn", line 8, in <module>
+2025-04-16T15:23:13.947149355Z sys.exit(main())
+2025-04-16T15:23:13.947152032Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1161, in __call__
+2025-04-16T15:23:13.947154697Z return self.main(*args, **kwargs)
+2025-04-16T15:23:13.947157114Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1082, in main
+2025-04-16T15:23:13.947159667Z rv = self.invoke(ctx)
+2025-04-16T15:23:13.947161953Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1443, in invoke
+2025-04-16T15:23:13.947164318Z return ctx.invoke(self.callback, **ctx.params)
+2025-04-16T15:23:13.947166733Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 788, in invoke
+2025-04-16T15:23:13.947169094Z return __callback(*args, **kwargs)
+2025-04-16T15:23:13.947171421Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 410, in main
+2025-04-16T15:23:13.947174064Z run(
+2025-04-16T15:23:13.947176307Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 577, in run
+2025-04-16T15:23:13.947178710Z server.run()
+2025-04-16T15:23:13.947181042Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 65, in run
+2025-04-16T15:23:13.947183513Z return asyncio.run(self.serve(sockets=sockets))
+2025-04-16T15:23:13.947185818Z File "/usr/local/lib/python3.9/asyncio/runners.py", line 44, in run
+2025-04-16T15:23:13.947188177Z return loop.run_until_complete(main)
+2025-04-16T15:23:13.947190524Z File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+2025-04-16T15:23:13.947193055Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 69, in serve
+2025-04-16T15:23:13.947195556Z await self._serve(sockets)
+2025-04-16T15:23:13.947197888Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 76, in _serve
+2025-04-16T15:23:13.947200359Z config.load()
+2025-04-16T15:23:13.947202572Z File "/usr/local/lib/python3.9/site-packages/uvicorn/config.py", line 434, in load
+2025-04-16T15:23:13.947204993Z self.loaded_app = import_from_string(self.app)
+2025-04-16T15:23:13.947207310Z File "/usr/local/lib/python3.9/site-packages/uvicorn/importer.py", line 19, in import_from_string
+2025-04-16T15:23:13.947209867Z module = importlib.import_module(module_str)
+2025-04-16T15:23:13.947212284Z File "/usr/local/lib/python3.9/importlib/__init__.py", line 127, in import_module
+2025-04-16T15:23:13.947214749Z return _bootstrap._gcd_import(name[level:], package, level)
+2025-04-16T15:23:13.947217116Z File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+2025-04-16T15:23:13.947219679Z File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+2025-04-16T15:23:13.947227020Z File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+2025-04-16T15:23:13.947229638Z File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+2025-04-16T15:23:13.947232800Z File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+2025-04-16T15:23:13.947235406Z File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+2025-04-16T15:23:13.947238033Z File "/app/app/main.py", line 10, in <module>
+2025-04-16T15:23:13.947240570Z from app.data_fetching import FetchData, process_env_variables
+2025-04-16T15:23:13.947243024Z File "/app/app/data_fetching.py", line 27, in <module>
+2025-04-16T15:23:13.947245526Z cosmos_Db_Obj = CosmoDB(cosmos_url,cosmos_key)
+2025-04-16T15:23:13.947247811Z File "/app/app/cosmos_operations.py", line 11, in __init__
+2025-04-16T15:23:13.947250187Z self.cosmos_client = CosmosClient(URL, credential=KEY)
+2025-04-16T15:23:13.947252511Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/cosmos_client.py", line 204, in __init__
+2025-04-16T15:23:13.947255043Z self.client_connection = CosmosClientConnection(
+2025-04-16T15:23:13.947257504Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 227, in __init__
+2025-04-16T15:23:13.947260051Z database_account = self._global_endpoint_manager._GetDatabaseAccount(**kwargs)
+2025-04-16T15:23:13.947262479Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 126, in _GetDatabaseAccount
+2025-04-16T15:23:13.947265026Z database_account = self._GetDatabaseAccountStub(self.DefaultEndpoint, **kwargs)
+2025-04-16T15:23:13.947267500Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 152, in _GetDatabaseAccountStub
+2025-04-16T15:23:13.947269989Z return self.Client.GetDatabaseAccount(endpoint, **kwargs)
+2025-04-16T15:23:13.947272300Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2525, in GetDatabaseAccount
+2025-04-16T15:23:13.947275096Z result, last_response_headers = self.__Get("", request_params, headers, **kwargs)
+2025-04-16T15:23:13.947277650Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2782, in __Get
+2025-04-16T15:23:13.947280235Z return synchronized_request.SynchronizedRequest(
+2025-04-16T15:23:13.947282602Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 204, in SynchronizedRequest
+2025-04-16T15:23:13.947285131Z return _retry_utility.Execute(
+2025-04-16T15:23:13.947287380Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 85, in Execute
+2025-04-16T15:23:13.947383838Z result = ExecuteFunction(function, global_endpoint_manager, *args, **kwargs)
+2025-04-16T15:23:13.947394613Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 149, in ExecuteFunction
+2025-04-16T15:23:13.947397393Z return function(*args, **kwargs)
+2025-04-16T15:23:13.947399837Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 155, in _Request
+2025-04-16T15:23:13.947402318Z raise exceptions.CosmosHttpResponseError(message=data, response=response)
+2025-04-16T15:23:13.947404771Z azure.cosmos.exceptions.CosmosHttpResponseError: (Forbidden) Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:23:13.947408996Z ActivityId: 8a3c7afb-b266-44b4-b797-f163732ae711, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+2025-04-16T15:23:13.947411466Z Code: Forbidden
+2025-04-16T15:23:13.947413796Z Message: Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:23:13.947416471Z ActivityId: 8a3c7afb-b266-44b4-b797-f163732ae711, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+
+2025-04-16T15:30:09.164372151Z Traceback (most recent call last):
+2025-04-16T15:30:09.164445571Z File "/usr/local/bin/uvicorn", line 8, in <module>
+2025-04-16T15:30:09.164449954Z sys.exit(main())
+2025-04-16T15:30:09.164452485Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1161, in __call__
+2025-04-16T15:30:09.164455128Z return self.main(*args, **kwargs)
+2025-04-16T15:30:09.164457925Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1082, in main
+2025-04-16T15:30:09.164460665Z rv = self.invoke(ctx)
+2025-04-16T15:30:09.164462991Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 1443, in invoke
+2025-04-16T15:30:09.164465564Z return ctx.invoke(self.callback, **ctx.params)
+2025-04-16T15:30:09.164468011Z File "/usr/local/lib/python3.9/site-packages/click/core.py", line 788, in invoke
+2025-04-16T15:30:09.164470525Z return __callback(*args, **kwargs)
+2025-04-16T15:30:09.164472848Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 410, in main
+2025-04-16T15:30:09.164475502Z run(
+2025-04-16T15:30:09.164477877Z File "/usr/local/lib/python3.9/site-packages/uvicorn/main.py", line 577, in run
+2025-04-16T15:30:09.164480483Z server.run()
+2025-04-16T15:30:09.164482810Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 65, in run
+2025-04-16T15:30:09.164485543Z return asyncio.run(self.serve(sockets=sockets))
+2025-04-16T15:30:09.164487920Z File "/usr/local/lib/python3.9/asyncio/runners.py", line 44, in run
+2025-04-16T15:30:09.164490427Z return loop.run_until_complete(main)
+2025-04-16T15:30:09.164492738Z File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+2025-04-16T15:30:09.164495299Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 69, in serve
+2025-04-16T15:30:09.164497871Z await self._serve(sockets)
+2025-04-16T15:30:09.164500446Z File "/usr/local/lib/python3.9/site-packages/uvicorn/server.py", line 76, in _serve
+2025-04-16T15:30:09.164502987Z config.load()
+2025-04-16T15:30:09.164505407Z File "/usr/local/lib/python3.9/site-packages/uvicorn/config.py", line 434, in load
+2025-04-16T15:30:09.164507957Z self.loaded_app = import_from_string(self.app)
+2025-04-16T15:30:09.164510391Z File "/usr/local/lib/python3.9/site-packages/uvicorn/importer.py", line 19, in import_from_string
+2025-04-16T15:30:09.164512871Z module = importlib.import_module(module_str)
+2025-04-16T15:30:09.164516551Z File "/usr/local/lib/python3.9/importlib/__init__.py", line 127, in import_module
+2025-04-16T15:30:09.164519150Z return _bootstrap._gcd_import(name[level:], package, level)
+2025-04-16T15:30:09.164521581Z File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+2025-04-16T15:30:09.164524442Z File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+2025-04-16T15:30:09.164534698Z File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+2025-04-16T15:30:09.164537388Z File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+2025-04-16T15:30:09.164540798Z File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+2025-04-16T15:30:09.164543345Z File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+2025-04-16T15:30:09.164545958Z File "/app/app/main.py", line 10, in <module>
+2025-04-16T15:30:09.164548540Z from app.data_fetching import FetchData, process_env_variables
+2025-04-16T15:30:09.164551030Z File "/app/app/data_fetching.py", line 27, in <module>
+2025-04-16T15:30:09.164553581Z cosmos_Db_Obj = CosmoDB(cosmos_url,cosmos_key)
+2025-04-16T15:30:09.164556013Z File "/app/app/cosmos_operations.py", line 11, in __init__
+2025-04-16T15:30:09.164558392Z self.cosmos_client = CosmosClient(URL, credential=KEY)
+2025-04-16T15:30:09.164560722Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/cosmos_client.py", line 204, in __init__
+2025-04-16T15:30:09.164563240Z self.client_connection = CosmosClientConnection(
+2025-04-16T15:30:09.164565709Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 227, in __init__
+2025-04-16T15:30:09.164568328Z database_account = self._global_endpoint_manager._GetDatabaseAccount(**kwargs)
+2025-04-16T15:30:09.164570790Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 126, in _GetDatabaseAccount
+2025-04-16T15:30:09.164573347Z database_account = self._GetDatabaseAccountStub(self.DefaultEndpoint, **kwargs)
+2025-04-16T15:30:09.164575981Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_global_endpoint_manager.py", line 152, in _GetDatabaseAccountStub
+2025-04-16T15:30:09.164578465Z return self.Client.GetDatabaseAccount(endpoint, **kwargs)
+2025-04-16T15:30:09.164580840Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2525, in GetDatabaseAccount
+2025-04-16T15:30:09.164583331Z result, last_response_headers = self.__Get("", request_params, headers, **kwargs)
+2025-04-16T15:30:09.164585973Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_cosmos_client_connection.py", line 2782, in __Get
+2025-04-16T15:30:09.164588542Z return synchronized_request.SynchronizedRequest(
+2025-04-16T15:30:09.164590897Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 204, in SynchronizedRequest
+2025-04-16T15:30:09.164593455Z return _retry_utility.Execute(
+2025-04-16T15:30:09.164595779Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 85, in Execute
+2025-04-16T15:30:09.164598230Z result = ExecuteFunction(function, global_endpoint_manager, *args, **kwargs)
+2025-04-16T15:30:09.164603952Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_retry_utility.py", line 149, in ExecuteFunction
+2025-04-16T15:30:09.164606556Z return function(*args, **kwargs)
+2025-04-16T15:30:09.164608907Z File "/usr/local/lib/python3.9/site-packages/azure/cosmos/_synchronized_request.py", line 155, in _Request
+2025-04-16T15:30:09.164611497Z raise exceptions.CosmosHttpResponseError(message=data, response=response)
+2025-04-16T15:30:09.164614005Z azure.cosmos.exceptions.CosmosHttpResponseError: (Forbidden) Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:30:09.164616833Z ActivityId: c9e63bfb-b4cf-4b18-aa80-15290bbbec86, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+2025-04-16T15:30:09.164619509Z Code: Forbidden
+2025-04-16T15:30:09.164621780Z Message: Request originated from IP 52.188.142.126 through public internet. This is blocked by your Cosmos DB account firewall settings. More info: https://aka.ms/cosmosdb-tsg-forbidden
+2025-04-16T15:30:09.164624345Z ActivityId: c9e63bfb-b4cf-4b18-aa80-15290bbbec86, documentdb-dotnet-sdk/2.14.0 Host/64-bit MicrosoftWindowsNT/10.0.20348.0
+
+2025_04_16_lw0sdlwk0007DK_docker.log:
+2025-04-16T15:13:10.8639584Z Container start method called.
+2025-04-16T15:13:10.9030784Z Establishing network.
+2025-04-16T15:13:10.9420855Z Pulling image: xtrerra.azurecr.io/genaiops-backend:2762.
+2025-04-16T15:15:25.6758791Z Image xtrerra.azurecr.io/genaiops-backend:2762 is pulled from registry xtrerra.azurecr.io
+2025-04-16T15:15:25.7257327Z Container is starting.
+2025-04-16T15:15:25.7261512Z Establishing user namespace if not established already.
+2025-04-16T15:15:25.7265659Z Establishing network if not established already.
+2025-04-16T15:15:25.7469466Z Mounting volumes.
+2025-04-16T15:15:25.7854350Z Nested mountpoint volatile/logs
+2025-04-16T15:15:25.8346716Z Nested mountpoint
+2025-04-16T15:15:25.9673068Z Creating container.
+2025-04-16T15:15:25.9680857Z Creating pipes for streaming container io.
+2025-04-16T15:15:25.9859587Z Creating stdout named pipe at /podr/container/pipe/ad93ff42_backendgenai/stdout_39f3537f008d487e89a3de5aa5293b7f.
+2025-04-16T15:15:25.9873435Z Successfully created stdout named pipe at: /podr/container/pipe/ad93ff42_backendgenai/stdout_39f3537f008d487e89a3de5aa5293b7f.
+2025-04-16T15:15:25.9884702Z Opening named pipe /podr/container/pipe/ad93ff42_backendgenai/stdout_39f3537f008d487e89a3de5aa5293b7f for reading in non-blocking mode.
+2025-04-16T15:15:26.0064037Z Successfully opened named pipe: /podr/container/pipe/ad93ff42_backendgenai/stdout_39f3537f008d487e89a3de5aa5293b7f.
+2025-04-16T15:15:26.0074796Z Successfully removed non-blocking flag from /podr/container/pipe/ad93ff42_backendgenai/stdout_39f3537f008d487e89a3de5aa5293b7f.
+2025-04-16T15:15:26.0080888Z Creating stderr named pipe at /podr/container/pipe/ad93ff42_backendgenai/stderr_e3af4c48c17546bc88d66998f6fc35cd.
+2025-04-16T15:15:26.0261737Z Successfully created stderr named pipe at: /podr/container/pipe/ad93ff42_backendgenai/stderr_e3af4c48c17546bc88d66998f6fc35cd.
+2025-04-16T15:15:26.0363142Z Opening named pipe /podr/container/pipe/ad93ff42_backendgenai/stderr_e3af4c48c17546bc88d66998f6fc35cd for reading in non-blocking mode.
+2025-04-16T15:15:26.0369113Z Successfully opened named pipe: /podr/container/pipe/ad93ff42_backendgenai/stderr_e3af4c48c17546bc88d66998f6fc35cd.
+2025-04-16T15:15:26.0374315Z Successfully removed non-blocking flag from /podr/container/pipe/ad93ff42_backendgenai/stderr_e3af4c48c17546bc88d66998f6fc35cd.
+2025-04-16T15:15:27.6845417Z Container image does not expose any ports. Defaulting to port 80
+2025-04-16T15:15:27.6852547Z Setting value of PORT variable to 80
+2025-04-16T15:15:27.6935357Z Creating container with image: xtrerra.azurecr.io/genaiops-backend:2762 from registry: xtrerra.azurecr.io and fully qualified image name: xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:15:34.3643558Z Starting container: ad93ff42_backendgenai.
+2025-04-16T15:15:35.4408946Z Starting watchers and probes.
+2025-04-16T15:15:35.7736909Z Starting metrics collection.
+2025-04-16T15:15:35.8229149Z Container is running.
+2025-04-16T15:15:36.6158879Z Container start method finished after 145732 ms.
+2025-04-16T15:16:02.3931452Z Container has finished running with exit code: 1.
+2025-04-16T15:16:02.4147924Z Container is terminating. Grace period: 5 seconds.
+2025-04-16T15:16:02.4922486Z Stop and delete container. Retry count = 0
+2025-04-16T15:16:02.6023557Z Stopping container: ad93ff42_backendgenai.
+2025-04-16T15:16:03.6626950Z Deleting container: ad93ff42_backendgenai. Retry count = 0
+2025-04-16T15:16:06.2411476Z Container spec TerminationMessagePolicy path
+2025-04-16T15:16:06.2502817Z Container is terminated. Total time elapsed: 3827 ms.
+2025-04-16T15:16:06.2602230Z Site container: backendgenai terminated during site startup.
+2025-04-16T15:16:06.3014252Z Site startup probe failed after 29.0615576 seconds.
+2025-04-16T15:16:06.4317648Z Failed to start site. Revert by stopping site.
+2025-04-16T15:16:08.2971809Z Site: backendgenai stopped.
+2025-04-16T15:16:13.722Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:16:14.888Z INFO - 2762 Pulling from genaiops-backend
+2025-04-16T15:16:15.008Z INFO - 4a679ac3b09f Already exists
+2025-04-16T15:16:15.118Z INFO - 74018f7cfa8f Pulling fs layer
+2025-04-16T15:16:15.227Z INFO - a0b0cfc480ce Pulling fs layer
+2025-04-16T15:16:15.316Z INFO - 97d21b95fb00 Pulling fs layer
+2025-04-16T15:16:15.317Z INFO - 350112290db6 Pulling fs layer
+2025-04-16T15:16:15.318Z INFO - 07c8e82da438 Pulling fs layer
+2025-04-16T15:16:15.318Z INFO - 6a309cfa7206 Pulling fs layer
+2025-04-16T15:16:15.319Z INFO - 942e771df559 Pulling fs layer
+2025-04-16T15:16:16.388Z INFO - 97d21b95fb00 Downloading 250B / 250B
+2025-04-16T15:16:16.567Z INFO - 97d21b95fb00 Verifying Checksum
+2025-04-16T15:16:16.568Z INFO - 97d21b95fb00 Download complete
+2025-04-16T15:16:16.569Z INFO - 350112290db6 Downloading 93B / 93B
+2025-04-16T15:16:16.578Z INFO - 942e771df559 Downloading 38KB / 38KB
+2025-04-16T15:16:16.578Z INFO - 350112290db6 Verifying Checksum
+2025-04-16T15:16:16.580Z INFO - 350112290db6 Download complete
+2025-04-16T15:16:16.587Z INFO - 942e771df559 Verifying Checksum
+2025-04-16T15:16:16.588Z INFO - 942e771df559 Download complete
+2025-04-16T15:16:16.589Z INFO - 07c8e82da438 Downloading 274B / 274B
+2025-04-16T15:16:16.590Z INFO - 07c8e82da438 Verifying Checksum
+2025-04-16T15:16:16.590Z INFO - 07c8e82da438 Download complete
+2025-04-16T15:16:16.607Z INFO - 6a309cfa7206 Downloading 527KB / 76MB
+2025-04-16T15:16:16.608Z INFO - 74018f7cfa8f Downloading 287KB / 3MB
+2025-04-16T15:16:16.609Z INFO - 6a309cfa7206 Downloading 1MB / 76MB
+2025-04-16T15:16:16.669Z INFO - 74018f7cfa8f Downloading 1MB / 3MB
+2025-04-16T15:16:16.767Z INFO - 6a309cfa7206 Downloading 2MB / 76MB
+2025-04-16T15:16:16.977Z INFO - a0b0cfc480ce Downloading 1MB / 14MB
+2025-04-16T15:16:16.979Z INFO - 74018f7cfa8f Downloading 2MB / 3MB
+2025-04-16T15:16:17.037Z INFO - 74018f7cfa8f Downloading 2MB / 3MB
+2025-04-16T15:16:17.486Z INFO - 74018f7cfa8f Verifying Checksum
+2025-04-16T15:16:17.514Z INFO - 74018f7cfa8f Download complete
+2025-04-16T15:16:17.775Z INFO - a0b0cfc480ce Downloading 3MB / 14MB
+2025-04-16T15:16:18.237Z INFO - a0b0cfc480ce Downloading 3MB / 14MB
+2025-04-16T15:16:18.572Z INFO - a0b0cfc480ce Downloading 4MB / 14MB
+2025-04-16T15:16:18.812Z INFO - 6a309cfa7206 Downloading 4MB / 76MB
+2025-04-16T15:16:18.813Z INFO - a0b0cfc480ce Downloading 4MB / 14MB
+2025-04-16T15:16:18.814Z INFO - a0b0cfc480ce Downloading 4MB / 14MB
+2025-04-16T15:16:18.844Z INFO - 6a309cfa7206 Downloading 5MB / 76MB
+2025-04-16T15:16:18.963Z INFO - 6a309cfa7206 Downloading 6MB / 76MB
+2025-04-16T15:16:19.253Z INFO - a0b0cfc480ce Downloading 7MB / 14MB
+2025-04-16T15:16:19.463Z INFO - 6a309cfa7206 Downloading 8MB / 76MB
+2025-04-16T15:16:19.464Z INFO - a0b0cfc480ce Downloading 7MB / 14MB
+2025-04-16T15:16:19.804Z INFO - 6a309cfa7206 Downloading 9MB / 76MB
+2025-04-16T15:16:20.035Z INFO - a0b0cfc480ce Downloading 9MB / 14MB
+2025-04-16T15:16:20.124Z INFO - a0b0cfc480ce Downloading 10MB / 14MB
+2025-04-16T15:16:20.125Z INFO - 6a309cfa7206 Downloading 10MB / 76MB
+2025-04-16T15:16:20.285Z INFO - 6a309cfa7206 Downloading 11MB / 76MB
+2025-04-16T15:16:20.635Z INFO - a0b0cfc480ce Downloading 10MB / 14MB
+2025-04-16T15:16:20.653Z INFO - 6a309cfa7206 Downloading 12MB / 76MB
+2025-04-16T15:16:20.654Z INFO - 6a309cfa7206 Downloading 12MB / 76MB
+2025-04-16T15:16:20.664Z INFO - 74018f7cfa8f Extracting 512KB / 3MB
+2025-04-16T15:16:20.913Z INFO - 74018f7cfa8f Extracting 576KB / 3MB
+2025-04-16T15:16:21.164Z INFO - 74018f7cfa8f Extracting 640KB / 3MB
+2025-04-16T15:16:21.224Z INFO - 6a309cfa7206 Downloading 13MB / 76MB
+2025-04-16T15:16:21.573Z INFO - 74018f7cfa8f Extracting 1MB / 3MB
+2025-04-16T15:16:21.805Z INFO - 6a309cfa7206 Downloading 15MB / 76MB
+2025-04-16T15:16:22.236Z INFO - a0b0cfc480ce Verifying Checksum
+2025-04-16T15:16:22.243Z INFO - a0b0cfc480ce Download complete
+2025-04-16T15:16:22.243Z INFO - 74018f7cfa8f Extracting 2MB / 3MB
+2025-04-16T15:16:22.244Z INFO - 74018f7cfa8f Extracting 2MB / 3MB
+2025-04-16T15:16:23.368Z INFO - 6a309cfa7206 Downloading 20MB / 76MB
+2025-04-16T15:16:23.658Z INFO - 74018f7cfa8f Extracting 3MB / 3MB
+2025-04-16T15:16:23.845Z INFO - 6a309cfa7206 Downloading 23MB / 76MB
+2025-04-16T15:16:23.846Z INFO - 74018f7cfa8f Pull complete
+2025-04-16T15:16:24.556Z INFO - 6a309cfa7206 Downloading 24MB / 76MB
+2025-04-16T15:16:24.647Z INFO - a0b0cfc480ce Extracting 960KB / 14MB
+2025-04-16T15:16:25.488Z INFO - a0b0cfc480ce Extracting 1MB / 14MB
+2025-04-16T15:16:25.587Z INFO - a0b0cfc480ce Extracting 1MB / 14MB
+2025-04-16T15:16:25.948Z INFO - a0b0cfc480ce Extracting 1MB / 14MB
+2025-04-16T15:16:26.213Z INFO - 6a309cfa7206 Downloading 27MB / 76MB
+2025-04-16T15:16:26.934Z INFO - a0b0cfc480ce Extracting 2MB / 14MB
+2025-04-16T15:16:27.141Z INFO - a0b0cfc480ce Extracting 3MB / 14MB
+2025-04-16T15:16:27.414Z INFO - 6a309cfa7206 Downloading 29MB / 76MB
+2025-04-16T15:16:29.096Z INFO - a0b0cfc480ce Extracting 4MB / 14MB
+2025-04-16T15:16:29.097Z INFO - 6a309cfa7206 Downloading 30MB / 76MB
+2025-04-16T15:16:29.647Z INFO - 6a309cfa7206 Downloading 32MB / 76MB
+2025-04-16T15:16:29.689Z INFO - a0b0cfc480ce Extracting 4MB / 14MB
+2025-04-16T15:16:29.970Z INFO - 6a309cfa7206 Downloading 33MB / 76MB
+2025-04-16T15:16:30.170Z INFO - a0b0cfc480ce Extracting 4MB / 14MB
+2025-04-16T15:16:30.279Z INFO - a0b0cfc480ce Extracting 5MB / 14MB
+2025-04-16T15:16:30.370Z INFO - 6a309cfa7206 Downloading 34MB / 76MB
+2025-04-16T15:16:30.722Z INFO - 6a309cfa7206 Downloading 35MB / 76MB
+2025-04-16T15:16:30.891Z INFO - 6a309cfa7206 Downloading 36MB / 76MB
+2025-04-16T15:16:31.334Z INFO - 6a309cfa7206 Downloading 38MB / 76MB
+2025-04-16T15:16:31.444Z INFO - a0b0cfc480ce Extracting 8MB / 14MB
+2025-04-16T15:16:31.556Z INFO - 6a309cfa7206 Downloading 38MB / 76MB
+2025-04-16T15:16:31.757Z INFO - a0b0cfc480ce Extracting 8MB / 14MB
+2025-04-16T15:16:32.229Z INFO - a0b0cfc480ce Extracting 9MB / 14MB
+2025-04-16T15:16:32.398Z INFO - 6a309cfa7206 Downloading 41MB / 76MB
+2025-04-16T15:16:32.399Z INFO - 6a309cfa7206 Downloading 41MB / 76MB
+2025-04-16T15:16:32.690Z INFO - a0b0cfc480ce Extracting 10MB / 14MB
+2025-04-16T15:16:33.071Z INFO - a0b0cfc480ce Extracting 10MB / 14MB
+2025-04-16T15:16:33.172Z INFO - 6a309cfa7206 Downloading 45MB / 76MB
+2025-04-16T15:16:33.676Z INFO - a0b0cfc480ce Extracting 10MB / 14MB
+2025-04-16T15:16:33.844Z INFO - 6a309cfa7206 Downloading 48MB / 76MB
+2025-04-16T15:16:34.557Z INFO - 6a309cfa7206 Downloading 52MB / 76MB
+2025-04-16T15:16:34.608Z INFO - a0b0cfc480ce Extracting 11MB / 14MB
+2025-04-16T15:16:34.998Z INFO - a0b0cfc480ce Extracting 11MB / 14MB
+2025-04-16T15:16:35.178Z INFO - 6a309cfa7206 Downloading 53MB / 76MB
+2025-04-16T15:16:35.540Z INFO - 6a309cfa7206 Downloading 55MB / 76MB
+2025-04-16T15:16:35.749Z INFO - a0b0cfc480ce Extracting 12MB / 14MB
+2025-04-16T15:16:36.260Z INFO - 6a309cfa7206 Downloading 56MB / 76MB
+2025-04-16T15:16:36.292Z INFO - a0b0cfc480ce Extracting 12MB / 14MB
+2025-04-16T15:16:36.722Z INFO - a0b0cfc480ce Extracting 12MB / 14MB
+2025-04-16T15:16:37.256Z INFO - a0b0cfc480ce Extracting 13MB / 14MB
+2025-04-16T15:16:37.497Z INFO - 6a309cfa7206 Downloading 61MB / 76MB
+2025-04-16T15:16:37.720Z INFO - a0b0cfc480ce Extracting 13MB / 14MB
+2025-04-16T15:16:38.180Z INFO - 6a309cfa7206 Downloading 63MB / 76MB
+2025-04-16T15:16:38.251Z INFO - a0b0cfc480ce Extracting 13MB / 14MB
+2025-04-16T15:16:38.563Z INFO - a0b0cfc480ce Extracting 14MB / 14MB
+2025-04-16T15:16:38.904Z INFO - 6a309cfa7206 Downloading 65MB / 76MB
+2025-04-16T15:16:39.104Z INFO - a0b0cfc480ce Extracting 14MB / 14MB
+2025-04-16T15:16:39.196Z INFO - 6a309cfa7206 Downloading 67MB / 76MB
+2025-04-16T15:16:39.468Z INFO - 6a309cfa7206 Downloading 67MB / 76MB
+2025-04-16T15:16:39.577Z INFO - 6a309cfa7206 Downloading 68MB / 76MB
+2025-04-16T15:16:39.660Z INFO - 6a309cfa7206 Downloading 70MB / 76MB
+2025-04-16T15:16:39.749Z INFO - a0b0cfc480ce Pull complete
+2025-04-16T15:16:39.789Z INFO - 6a309cfa7206 Downloading 72MB / 76MB
+2025-04-16T15:16:39.849Z INFO - 97d21b95fb00 Extracting 250B / 250B
+2025-04-16T15:16:40.001Z INFO - 6a309cfa7206 Downloading 73MB / 76MB
+2025-04-16T15:16:40.120Z INFO - 97d21b95fb00 Extracting 250B / 250B
+2025-04-16T15:16:40.223Z INFO - 6a309cfa7206 Downloading 73MB / 76MB
+2025-04-16T15:16:40.321Z INFO - 97d21b95fb00 Pull complete
+2025-04-16T15:16:40.322Z INFO - 6a309cfa7206 Downloading 74MB / 76MB
+2025-04-16T15:16:40.373Z INFO - 6a309cfa7206 Verifying Checksum
+2025-04-16T15:16:40.412Z INFO - 6a309cfa7206 Download complete
+2025-04-16T15:16:40.413Z INFO - 350112290db6 Extracting 93B / 93B
+2025-04-16T15:16:40.462Z INFO - 350112290db6 Extracting 93B / 93B
+2025-04-16T15:16:40.463Z INFO - 350112290db6 Pull complete
+2025-04-16T15:16:40.463Z INFO - 07c8e82da438 Extracting 274B / 274B
+2025-04-16T15:16:40.464Z INFO - 07c8e82da438 Extracting 274B / 274B
+2025-04-16T15:16:40.471Z INFO - 07c8e82da438 Pull complete
+2025-04-16T15:16:41.218Z INFO - 6a309cfa7206 Extracting 544KB / 76MB
+2025-04-16T15:16:42.623Z INFO - 6a309cfa7206 Extracting 2MB / 76MB
+2025-04-16T15:16:43.105Z INFO - 6a309cfa7206 Extracting 3MB / 76MB
+2025-04-16T15:16:43.961Z INFO - 6a309cfa7206 Extracting 3MB / 76MB
+2025-04-16T15:16:44.814Z INFO - 6a309cfa7206 Extracting 4MB / 76MB
+2025-04-16T15:16:46.631Z INFO - 6a309cfa7206 Extracting 5MB / 76MB
+2025-04-16T15:16:48.124Z INFO - 6a309cfa7206 Extracting 6MB / 76MB
+2025-04-16T15:16:49.279Z INFO - 6a309cfa7206 Extracting 7MB / 76MB
+2025-04-16T15:16:50.414Z INFO - 6a309cfa7206 Extracting 9MB / 76MB
+2025-04-16T15:16:51.338Z INFO - 6a309cfa7206 Extracting 11MB / 76MB
+2025-04-16T15:16:51.849Z INFO - 6a309cfa7206 Extracting 12MB / 76MB
+2025-04-16T15:16:51.962Z INFO - 6a309cfa7206 Extracting 12MB / 76MB
+2025-04-16T15:16:53.116Z INFO - 6a309cfa7206 Extracting 13MB / 76MB
+2025-04-16T15:16:53.868Z INFO - 6a309cfa7206 Extracting 14MB / 76MB
+2025-04-16T15:16:55.977Z INFO - 6a309cfa7206 Extracting 15MB / 76MB
+2025-04-16T15:16:56.850Z INFO - 6a309cfa7206 Extracting 15MB / 76MB
+2025-04-16T15:16:57.304Z INFO - 6a309cfa7206 Extracting 17MB / 76MB
+2025-04-16T15:16:58.007Z INFO - 6a309cfa7206 Extracting 18MB / 76MB
+2025-04-16T15:16:59.404Z INFO - 6a309cfa7206 Extracting 22MB / 76MB
+2025-04-16T15:16:59.715Z INFO - 6a309cfa7206 Extracting 23MB / 76MB
+2025-04-16T15:17:00.214Z INFO - 6a309cfa7206 Extracting 24MB / 76MB
+2025-04-16T15:17:00.466Z INFO - 6a309cfa7206 Extracting 24MB / 76MB
+2025-04-16T15:17:01.110Z INFO - 6a309cfa7206 Extracting 26MB / 76MB
+2025-04-16T15:17:01.451Z INFO - 6a309cfa7206 Extracting 26MB / 76MB
+2025-04-16T15:17:02.647Z INFO - 6a309cfa7206 Extracting 27MB / 76MB
+2025-04-16T15:17:04.243Z INFO - 6a309cfa7206 Extracting 29MB / 76MB
+2025-04-16T15:17:05.497Z INFO - 6a309cfa7206 Extracting 30MB / 76MB
+2025-04-16T15:17:05.912Z INFO - 6a309cfa7206 Extracting 32MB / 76MB
+2025-04-16T15:17:07.982Z INFO - 6a309cfa7206 Extracting 34MB / 76MB
+2025-04-16T15:17:09.038Z INFO - 6a309cfa7206 Extracting 35MB / 76MB
+2025-04-16T15:17:09.771Z INFO - 6a309cfa7206 Extracting 36MB / 76MB
+2025-04-16T15:17:10.626Z INFO - 6a309cfa7206 Extracting 37MB / 76MB
+2025-04-16T15:17:13.400Z INFO - 6a309cfa7206 Extracting 38MB / 76MB
+2025-04-16T15:17:14.426Z INFO - 6a309cfa7206 Extracting 39MB / 76MB
+2025-04-16T15:17:16.309Z INFO - 6a309cfa7206 Extracting 41MB / 76MB
+2025-04-16T15:17:17.881Z INFO - 6a309cfa7206 Extracting 46MB / 76MB
+2025-04-16T15:17:18.455Z INFO - 6a309cfa7206 Extracting 47MB / 76MB
+2025-04-16T15:17:19.930Z INFO - 6a309cfa7206 Extracting 48MB / 76MB
+2025-04-16T15:17:20.091Z INFO - 6a309cfa7206 Extracting 49MB / 76MB
+2025-04-16T15:17:20.935Z INFO - 6a309cfa7206 Extracting 50MB / 76MB
+2025-04-16T15:17:22.799Z INFO - 6a309cfa7206 Extracting 52MB / 76MB
+2025-04-16T15:17:24.375Z INFO - 6a309cfa7206 Extracting 53MB / 76MB
+2025-04-16T15:17:25.519Z INFO - 6a309cfa7206 Extracting 55MB / 76MB
+2025-04-16T15:17:26.968Z INFO - 6a309cfa7206 Extracting 56MB / 76MB
+2025-04-16T15:17:27.308Z INFO - 6a309cfa7206 Extracting 56MB / 76MB
+2025-04-16T15:17:27.792Z INFO - 6a309cfa7206 Extracting 57MB / 76MB
+2025-04-16T15:17:28.061Z INFO - 6a309cfa7206 Extracting 58MB / 76MB
+2025-04-16T15:17:28.474Z INFO - 6a309cfa7206 Extracting 59MB / 76MB
+2025-04-16T15:17:28.695Z INFO - 6a309cfa7206 Extracting 60MB / 76MB
+2025-04-16T15:17:29.570Z INFO - 6a309cfa7206 Extracting 61MB / 76MB
+2025-04-16T15:17:30.645Z INFO - 6a309cfa7206 Extracting 62MB / 76MB
+2025-04-16T15:17:31.380Z INFO - 6a309cfa7206 Extracting 64MB / 76MB
+2025-04-16T15:17:32.791Z INFO - 6a309cfa7206 Extracting 65MB / 76MB
+2025-04-16T15:17:35.084Z INFO - 6a309cfa7206 Extracting 67MB / 76MB
+2025-04-16T15:17:36.281Z INFO - 6a309cfa7206 Extracting 68MB / 76MB
+2025-04-16T15:17:38.531Z INFO - 6a309cfa7206 Extracting 70MB / 76MB
+2025-04-16T15:17:40.892Z INFO - 6a309cfa7206 Extracting 70MB / 76MB
+2025-04-16T15:17:41.957Z INFO - 6a309cfa7206 Extracting 71MB / 76MB
+2025-04-16T15:17:42.498Z INFO - 6a309cfa7206 Extracting 72MB / 76MB
+2025-04-16T15:17:42.971Z INFO - 6a309cfa7206 Extracting 73MB / 76MB
+2025-04-16T15:17:43.573Z INFO - 6a309cfa7206 Extracting 76MB / 76MB
+2025-04-16T15:17:46.227Z INFO - 6a309cfa7206 Pull complete
+2025-04-16T15:17:46.239Z INFO - 942e771df559 Extracting 32KB / 38KB
+2025-04-16T15:17:46.398Z INFO - 942e771df559 Extracting 38KB / 38KB
+2025-04-16T15:17:46.407Z INFO - 942e771df559 Pull complete
+2025-04-16T15:17:46.480Z INFO - Digest: sha256:4e2a6bfc4365e878de268bc92d2da463a18648868d53f3bb05a0cd465e2b00da
+2025-04-16T15:17:46.499Z INFO - Status: Downloaded newer image for xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:17:46.619Z INFO - Pull Image successful, Time taken: 92 Seconds
+2025-04-16T15:17:47.331Z INFO - Starting container for site
+2025-04-16T15:17:47.332Z INFO - docker run -d --expose=80 --name backendgenai_0_860196c3 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=backendgenai -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=backendgenai.azurewebsites.net -e WEBSITE_INSTANCE_ID=978831a12b989a546f04a417ac73afab2417e3847711476ee09674c03af7af1b xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:17:47.332Z INFO - Logging is not enabled for this container.
 Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T13:50:59.529Z INFO - Initiating warmup request to container genaiops-backend_0_36ede669 for site genaiops-backend
-2025-04-16T13:51:01.575Z ERROR - Container genaiops-backend_0_36ede669 for site genaiops-backend has exited, failing site start
-2025-04-16T13:51:01.589Z ERROR - Container genaiops-backend_0_36ede669 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T13:51:01.612Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T13:51:10.429Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:51:10.564Z INFO - 2755 Pulling from genaiops-backend
-2025-04-16T13:51:10.575Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
-2025-04-16T13:51:10.576Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:51:10.587Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T13:51:10.607Z INFO - Starting container for site
-2025-04-16T13:51:10.608Z INFO - docker run -d --expose=80 --name genaiops-backend_0_491579c6 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:51:10.609Z INFO - Logging is not enabled for this container.
+2025-04-16T15:18:12.603Z INFO - Initiating warmup request to container backendgenai_0_860196c3 for site backendgenai
+2025-04-16T15:18:29.509Z INFO - Waiting for response to warmup request for container backendgenai_0_860196c3. Elapsed time = 16.9057985 sec
+2025-04-16T15:18:38.859Z ERROR - Container backendgenai_0_860196c3 for site backendgenai is not running, failing site start
+2025-04-16T15:18:39.030Z ERROR - Container backendgenai_0_860196c3 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:18:39.151Z INFO - Stopping site backendgenai because it failed during startup.
+2025-04-16T15:18:50.598Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:18:52.195Z INFO - 2762 Pulling from genaiops-backend
+2025-04-16T15:18:52.434Z INFO - Digest: sha256:4e2a6bfc4365e878de268bc92d2da463a18648868d53f3bb05a0cd465e2b00da
+2025-04-16T15:18:52.435Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:18:52.465Z INFO - Pull Image successful, Time taken: 1 Seconds
+2025-04-16T15:18:52.626Z INFO - Starting container for site
+2025-04-16T15:18:52.626Z INFO - docker run -d --expose=80 --name backendgenai_0_6a3297bf -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=backendgenai -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=backendgenai.azurewebsites.net -e WEBSITE_INSTANCE_ID=978831a12b989a546f04a417ac73afab2417e3847711476ee09674c03af7af1b xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:18:52.627Z INFO - Logging is not enabled for this container.
 Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T13:51:11.297Z INFO - Initiating warmup request to container genaiops-backend_0_491579c6 for site genaiops-backend
-2025-04-16T13:51:13.328Z ERROR - Container genaiops-backend_0_491579c6 for site genaiops-backend has exited, failing site start
-2025-04-16T13:51:13.338Z ERROR - Container genaiops-backend_0_491579c6 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T13:51:13.342Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T13:53:27.071Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:53:27.237Z INFO - 2755 Pulling from genaiops-backend
-2025-04-16T13:53:27.245Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
-2025-04-16T13:53:27.246Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:53:27.255Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T13:53:27.271Z INFO - Starting container for site
-2025-04-16T13:53:27.273Z INFO - docker run -d --expose=80 --name genaiops-backend_0_0fd3a4b2 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:53:27.274Z INFO - Logging is not enabled for this container.
+2025-04-16T15:18:57.119Z INFO - Initiating warmup request to container backendgenai_0_6a3297bf for site backendgenai
+2025-04-16T15:19:14.601Z INFO - Waiting for response to warmup request for container backendgenai_0_6a3297bf. Elapsed time = 17.4822016 sec
+2025-04-16T15:19:17.685Z ERROR - Container backendgenai_0_6a3297bf for site backendgenai has exited, failing site start
+2025-04-16T15:19:17.755Z ERROR - Container backendgenai_0_6a3297bf didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:19:17.785Z INFO - Stopping site backendgenai because it failed during startup.
+2025-04-16T15:19:28.033Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:19:28.967Z INFO - 2762 Pulling from genaiops-backend
+2025-04-16T15:19:29.087Z INFO - Digest: sha256:4e2a6bfc4365e878de268bc92d2da463a18648868d53f3bb05a0cd465e2b00da
+2025-04-16T15:19:29.087Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:19:29.160Z INFO - Pull Image successful, Time taken: 1 Seconds
+2025-04-16T15:19:29.329Z INFO - Starting container for site
+2025-04-16T15:19:29.330Z INFO - docker run -d --expose=80 --name backendgenai_0_7bcfa34d -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=backendgenai -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=backendgenai.azurewebsites.net -e WEBSITE_INSTANCE_ID=978831a12b989a546f04a417ac73afab2417e3847711476ee09674c03af7af1b xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:19:29.367Z INFO - Logging is not enabled for this container.
 Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T13:53:28.428Z INFO - Initiating warmup request to container genaiops-backend_0_0fd3a4b2 for site genaiops-backend
-2025-04-16T13:53:30.313Z ERROR - Container genaiops-backend_0_0fd3a4b2 for site genaiops-backend has exited, failing site start
-2025-04-16T13:53:30.319Z ERROR - Container genaiops-backend_0_0fd3a4b2 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T13:53:30.321Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T13:54:52.016Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:54:52.163Z INFO - 2755 Pulling from genaiops-backend
-2025-04-16T13:54:52.174Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
-2025-04-16T13:54:52.175Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:54:52.183Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T13:54:53.768Z INFO - Starting container for site
-2025-04-16T13:54:53.770Z INFO - docker run -d --expose=80 --name genaiops-backend_0_66a346dc -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
-2025-04-16T13:54:53.771Z INFO - Logging is not enabled for this container.
+2025-04-16T15:19:33.569Z INFO - Initiating warmup request to container backendgenai_0_7bcfa34d for site backendgenai
+2025-04-16T15:19:49.270Z ERROR - Container backendgenai_0_7bcfa34d for site backendgenai has exited, failing site start
+2025-04-16T15:19:49.302Z ERROR - Container backendgenai_0_7bcfa34d didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:19:49.391Z INFO - Stopping site backendgenai because it failed during startup.
+2025-04-16T15:20:01.536Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:20:02.384Z INFO - 2762 Pulling from genaiops-backend
+2025-04-16T15:20:03.019Z INFO - Digest: sha256:4e2a6bfc4365e878de268bc92d2da463a18648868d53f3bb05a0cd465e2b00da
+2025-04-16T15:20:03.027Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:20:03.199Z INFO - Pull Image successful, Time taken: 1 Seconds
+2025-04-16T15:20:03.501Z INFO - Starting container for site
+2025-04-16T15:20:03.501Z INFO - docker run -d --expose=80 --name backendgenai_0_edc4fa1e -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=backendgenai -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=backendgenai.azurewebsites.net -e WEBSITE_INSTANCE_ID=978831a12b989a546f04a417ac73afab2417e3847711476ee09674c03af7af1b xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:20:03.530Z INFO - Logging is not enabled for this container.
 Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T13:54:54.127Z INFO - Initiating warmup request to container genaiops-backend_0_66a346dc for site genaiops-backend
-2025-04-16T13:54:56.188Z ERROR - Container genaiops-backend_0_66a346dc for site genaiops-backend has exited, failing site start
-2025-04-16T13:54:56.205Z ERROR - Container genaiops-backend_0_66a346dc didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T13:54:56.214Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T13:59:42.4134997Z Container start method called.
-2025-04-16T13:59:42.4136059Z Establishing network.
-2025-04-16T13:59:42.4137072Z Pulling image: xtrerra.azurecr.io/genaiops-backend:2756.
-2025-04-16T13:59:42.8060791Z Image xtrerra.azurecr.io/genaiops-backend:2756 is pulled from registry xtrerra.azurecr.io
-2025-04-16T13:59:42.8063477Z Container is starting.
-2025-04-16T13:59:42.8074259Z Establishing user namespace if not established already.
-2025-04-16T13:59:42.8077793Z Establishing network if not established already.
-2025-04-16T13:59:42.8081197Z Mounting volumes.
-2025-04-16T13:59:42.8086076Z Nested mountpoint volatile/logs
-2025-04-16T13:59:42.8104823Z Nested mountpoint
-2025-04-16T13:59:42.8290518Z Creating container.
-2025-04-16T13:59:42.8292786Z Creating pipes for streaming container io.
-2025-04-16T13:59:42.8294794Z Creating stdout named pipe at /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
-2025-04-16T13:59:42.8297714Z Successfully created stdout named pipe at: /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
-2025-04-16T13:59:42.8300793Z Opening named pipe /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa for reading in non-blocking mode.
-2025-04-16T13:59:42.8303177Z Successfully opened named pipe: /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
-2025-04-16T13:59:42.8305151Z Successfully removed non-blocking flag from /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
-2025-04-16T13:59:42.8307188Z Creating stderr named pipe at /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
-2025-04-16T13:59:42.8309635Z Successfully created stderr named pipe at: /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
-2025-04-16T13:59:42.8312841Z Opening named pipe /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b for reading in non-blocking mode.
-2025-04-16T13:59:42.8314936Z Successfully opened named pipe: /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
-2025-04-16T13:59:42.8316858Z Successfully removed non-blocking flag from /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
-2025-04-16T13:59:42.8718834Z Container image does not expose any ports. Defaulting to port 80
-2025-04-16T13:59:42.8721022Z Setting value of PORT variable to 80
-2025-04-16T13:59:42.8723527Z Creating container with image: xtrerra.azurecr.io/genaiops-backend:2756 from registry: xtrerra.azurecr.io and fully qualified image name: xtrerra.azurecr.io/genaiops-backend:2756
-2025-04-16T13:59:42.9783994Z Starting container: 312a4727_genaiops-backend.
-2025-04-16T13:59:43.0003064Z Starting watchers and probes.
-2025-04-16T13:59:43.0014596Z Starting metrics collection.
-2025-04-16T13:59:43.0077963Z Container is running.
-2025-04-16T13:59:43.0248090Z Container start method finished after 610 ms.
-2025-04-16T13:59:44.2719601Z Container has finished running with exit code: 1.
-2025-04-16T13:59:44.2720817Z Container is terminating. Grace period: 5 seconds.
-2025-04-16T13:59:44.2723702Z Stop and delete container. Retry count = 0
-2025-04-16T13:59:44.2724676Z Stopping container: 312a4727_genaiops-backend.
-2025-04-16T13:59:44.2839932Z Deleting container: 312a4727_genaiops-backend. Retry count = 0
-2025-04-16T13:59:44.7028189Z Site: genaiops-backend stopped.
-2025-04-16T13:59:48.500Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T13:59:48.600Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T13:59:48.612Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T13:59:48.613Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T13:59:48.626Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T13:59:49.797Z INFO - Starting container for site
-2025-04-16T13:59:49.799Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_5b8626a3_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.132.2:80 /Host.UseFileLogging=true
-2025-04-16T13:59:49.800Z INFO - Logging is not enabled for this container.
+2025-04-16T15:20:09.090Z INFO - Initiating warmup request to container backendgenai_0_edc4fa1e for site backendgenai
+2025-04-16T15:20:23.383Z ERROR - Container backendgenai_0_edc4fa1e for site backendgenai has exited, failing site start
+2025-04-16T15:20:23.421Z ERROR - Container backendgenai_0_edc4fa1e didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:20:23.533Z INFO - Stopping site backendgenai because it failed during startup.
+2025-04-16T15:22:43.068Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:22:45.543Z INFO - 2762 Pulling from genaiops-backend
+2025-04-16T15:22:45.612Z INFO - Digest: sha256:4e2a6bfc4365e878de268bc92d2da463a18648868d53f3bb05a0cd465e2b00da
+2025-04-16T15:22:45.613Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:22:45.793Z INFO - Pull Image successful, Time taken: 2 Seconds
+2025-04-16T15:22:53.168Z INFO - Starting container for site
+2025-04-16T15:22:53.188Z INFO - docker run -d --expose=80 --name backendgenai_0_fd79bacb -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=backendgenai -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=backendgenai.azurewebsites.net -e WEBSITE_INSTANCE_ID=978831a12b989a546f04a417ac73afab2417e3847711476ee09674c03af7af1b xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:22:53.189Z INFO - Logging is not enabled for this container.
 Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-TH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2756
-2025-04-16T13:59:48.140Z INFO - Logging is not enabled for this container.
+2025-04-16T15:22:59.964Z INFO - Initiating warmup request to container backendgenai_0_fd79bacb for site backendgenai
+2025-04-16T15:23:15.482Z ERROR - Container backendgenai_0_fd79bacb for site backendgenai has exited, failing site start
+2025-04-16T15:23:17.008Z ERROR - Container backendgenai_0_fd79bacb didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:23:17.140Z INFO - Stopping site backendgenai because it failed during startup.
+2025-04-16T15:29:57.420Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:29:57.623Z INFO - 2762 Pulling from genaiops-backend
+2025-04-16T15:29:57.641Z INFO - Digest: sha256:4e2a6bfc4365e878de268bc92d2da463a18648868d53f3bb05a0cd465e2b00da
+2025-04-16T15:29:57.642Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:29:57.653Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T15:29:57.741Z INFO - Starting container for site
+2025-04-16T15:29:57.749Z INFO - docker run -d --expose=80 --name backendgenai_0_ce1911c5 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=backendgenai -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=backendgenai.azurewebsites.net -e WEBSITE_INSTANCE_ID=978831a12b989a546f04a417ac73afab2417e3847711476ee09674c03af7af1b xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:29:57.750Z INFO - Logging is not enabled for this container.
 Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T13:59:50.474Z INFO - Initiating warmup request to container genaiops-backend_0_5b8626a3 for site genaiops-backend
-2025-04-16T13:59:51.507Z ERROR - Container genaiops-backend_0_5b8626a3 for site genaiops-backend has exited, failing site start
-2025-04-16T13:59:51.508Z INFO - Initiating warmup request to container genaiops-backend_0_5b8626a3_middleware for site genaiops-backend
-2025-04-16T13:59:52.749Z INFO - Container genaiops-backend_0_5b8626a3_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T13:59:52.760Z ERROR - Container genaiops-backend_0_5b8626a3 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T13:59:52.767Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:02:56.109Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:02:56.205Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:02:56.216Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:02:56.218Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:02:56.231Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:02:56.267Z INFO - Starting container for site
-2025-04-16T14:02:56.268Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_e7fcef3b_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:80 /Host.UseFileLogging=true
-2025-04-16T14:02:56.270Z INFO - Logging is not enabled for this containe2025-04-16T14:02:57.115Z INFO - Initiating warmup request to container genaiops-backend_0_e7fcef3b for site genaiops-backend
-2025-04-16T14:03:00.407Z ERROR - Container genaiops-backend_0_e7fcef3b for site genaiops-backend has exited, failing site start
-2025-04-16T14:03:00.408Z INFO - Initiating warmup request to container genaiops-backend_0_e7fcef3b_middleware for site genaiops-backend
-2025-04-16T14:03:00.624Z INFO - Container genaiops-backend_0_e7fcef3b_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:03:00.632Z ERROR - Container genaiops-backend_0_e7fcef3b didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T14:03:00.638Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:10:06.603Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:10:06.709Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:10:06.722Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:10:06.723Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:10:06.734Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:10:06.755Z INFO - Starting container for site
-2025-04-16T14:10:06.756Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_a9eb5fe6_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:80 /Host.UseFileLogging=true
-2025-04-16T14:10:06.757Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-.282Z INFO - Pull Image successful, Time taken: 1 Seconds
-2025-04-16T14:10:06.255Z INFO - Starting container for site
-2025-04-16T14:10:06.255Z INFO - docker run -d --expose=80 --name genaiops-backend_0_a9eb5fe6 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2757
-2025-04-16T14:10:06.255Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T14:10:07.685Z INFO - Initiating warmup request to container genaiops-backend_0_a9eb5fe6 for site genaiops-backend
-2025-04-16T14:10:09.720Z ERROR - Container genaiops-backend_0_a9eb5fe6 for site genaiops-backend has exited, failing site start
-2025-04-16T14:10:09.720Z INFO - Initiating warmup request to container genaiops-backend_0_a9eb5fe6_middleware for site genaiops-backend
-2025-04-16T14:10:09.957Z INFO - Container genaiops-backend_0_a9eb5fe6_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:10:09.966Z ERROR - Container genaiops-backend_0_a9eb5fe6 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T14:10:10.760Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:16:34.402Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:16:34.605Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:16:34.617Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:16:34.618Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:16:34.636Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:16:34.660Z INFO - Starting container for site
-2025-04-16T14:16:34.661Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_cb64f1bd_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:80 /Host.UseFileLogging=true
-2025-04-16T14:16:34.662Z INFO - Logging is not enabled for this container.
-Please u2025-04-16T14:16:35.230Z INFO - Initiating warmup request to container genaiops-backend_0_cb64f1bd for site genaiops-backend
-2025-04-16T14:16:38.277Z ERROR - Container genaiops-backend_0_cb64f1bd for site genaiops-backend has exited, failing site start
-2025-04-16T14:16:38.278Z INFO - Initiating warmup request to container genaiops-backend_0_cb64f1bd_middleware for site genaiops-backend
-2025-04-16T14:16:38.495Z INFO - Container genaiops-backend_0_cb64f1bd_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:16:38.519Z ERROR - Container genaiops-backend_0_cb64f1bd didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T14:16:38.534Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:19:48.589Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:19:48.724Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:19:48.732Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:19:48.733Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:19:48.753Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:19:51.373Z INFO - Starting container for site
-2025-04-16T14:19:51.373Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_09935c10_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=8080 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:8080 /Host.UseFileLogging=true
-2025-04-16T14:19:51.373Z INFO - Logging is not enabled for this containe2025-04-16T14:19:52.368Z INFO - Initiating warmup request to container genaiops-backend_0_09935c10 for site genaiops-backend
-2025-04-16T14:19:52.393Z ERROR - Container genaiops-backend_0_09935c10 for site genaiops-backend has exited, failing site start
-2025-04-16T14:19:52.393Z INFO - Initiating warmup request to container genaiops-backend_0_09935c10_middleware for site genaiops-backend
-2025-04-16T14:19:53.624Z INFO - Container genaiops-backend_0_09935c10_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:19:53.631Z ERROR - Container genaiops-backend_0_09935c10 didn't respond to HTTP pings on port: 8080. Failing site start. See container logs for debugging.
-2025-04-16T14:19:53.640Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:25:33.071Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:25:33.174Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:25:33.184Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:25:33.185Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:25:33.199Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:25:33.214Z INFO - Starting container for site
-2025-04-16T14:25:33.216Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_59674c22_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=8080 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:8080 /Host.UseFileLogging=true
-2025-04-16T14:25:33.218Z INFO - Logging is not enabled for this containe2025-04-16T14:25:34.219Z INFO - Initiating warmup request to container genaiops-backend_0_59674c22 for site genaiops-backend
-2025-04-16T14:25:36.253Z ERROR - Container genaiops-backend_0_59674c22 for site genaiops-backend has exited, failing site start
-2025-04-16T14:25:36.254Z INFO - Initiating warmup request to container genaiops-backend_0_59674c22_middleware for site genaiops-backend
-2025-04-16T14:25:36.484Z INFO - Container genaiops-backend_0_59674c22_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:25:36.491Z ERROR - Container genaiops-backend_0_59674c22 didn't respond to HTTP pings on port: 8080. Failing site start. See container logs for debugging.
-2025-04-16T14:25:36.510Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:36:00.234Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:36:00.738Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:36:00.747Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:36:00.747Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:36:00.757Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:36:00.783Z INFO - Starting container for site
-2025-04-16T14:36:00.783Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_49f5c11c_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
-2025-04-16T14:36:00.783Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-TH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2760
-2025-04-16T14:35:59.821Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T14:36:01.318Z INFO - Initiating warmup request to container genaiops-backend_0_49f5c11c for site genaiops-backend
-2025-04-16T14:36:03.389Z ERROR - Container genaiops-backend_0_49f5c11c for site genaiops-backend has exited, failing site start
-2025-04-16T14:36:03.390Z INFO - Initiating warmup request to container genaiops-backend_0_49f5c11c_middleware for site genaiops-backend
-2025-04-16T14:36:04.636Z INFO - Container genaiops-backend_0_49f5c11c_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:36:04.646Z ERROR - Container genaiops-backend_0_49f5c11c didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T14:36:04.654Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:44:25.517Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:44:25.740Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:44:25.753Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:44:25.755Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:44:25.772Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:44:25.796Z INFO - Starting container for site
-2025-04-16T14:44:25.797Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_d639a0d2_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.4:80 /Host.UseFileLogging=true
-2025-04-16T14:44:25.799Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-.810Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:44:24.813Z INFO - Starting container for site
-2025-04-16T14:44:24.815Z INFO - docker run -d --expose=80 --name genaiops-backend_0_d639a0d2 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2761
-2025-04-16T14:44:24.829Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T14:44:27.222Z INFO - Initiating warmup request to container genaiops-backend_0_d639a0d2 for site genaiops-backend
-2025-04-16T14:44:27.291Z ERROR - Container genaiops-backend_0_d639a0d2 for site genaiops-backend has exited, failing site start
-2025-04-16T14:44:27.292Z INFO - Initiating warmup request to container genaiops-backend_0_d639a0d2_middleware for site genaiops-backend
-2025-04-16T14:44:29.528Z INFO - Container genaiops-backend_0_d639a0d2_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:44:29.538Z ERROR - Container genaiops-backend_0_d639a0d2 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T14:44:29.547Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:49:29.858Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:49:29.958Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:49:29.969Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:49:29.970Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:49:29.981Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:49:30.000Z INFO - Starting container for site
-2025-04-16T14:49:30.001Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_39e00309_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=8080 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:8080 /Host.UseFileLogging=true
-2025-04-16T14:49:30.002Z INFO - Logging is not enabled for this containe2025-04-16T14:49:30.533Z INFO - Initiating warmup request to container genaiops-backend_0_39e00309 for site genaiops-backend
-2025-04-16T14:49:32.730Z ERROR - Container genaiops-backend_0_39e00309 for site genaiops-backend has exited, failing site start
-2025-04-16T14:49:32.731Z INFO - Initiating warmup request to container genaiops-backend_0_39e00309_middleware for site genaiops-backend
-2025-04-16T14:49:32.987Z INFO - Container genaiops-backend_0_39e00309_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:49:32.995Z ERROR - Container genaiops-backend_0_39e00309 didn't respond to HTTP pings on port: 8080. Failing site start. See container logs for debugging.
-2025-04-16T14:49:33.009Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T14:53:56.885Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:53:56.994Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T14:53:57.005Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T14:53:57.006Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T14:53:57.015Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T14:53:57.033Z INFO - Starting container for site
-2025-04-16T14:53:57.034Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_63854cc1_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
-2025-04-16T14:53:57.035Z INFO - Logging is not enabled for this containe2025-04-16T14:53:58.150Z INFO - Initiating warmup request to container genaiops-backend_0_63854cc1 for site genaiops-backend
-2025-04-16T14:53:59.195Z ERROR - Container genaiops-backend_0_63854cc1 for site genaiops-backend has exited, failing site start
-2025-04-16T14:53:59.195Z INFO - Initiating warmup request to container genaiops-backend_0_63854cc1_middleware for site genaiops-backend
-2025-04-16T14:54:00.416Z INFO - Container genaiops-backend_0_63854cc1_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T14:54:00.423Z ERROR - Container genaiops-backend_0_63854cc1 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T14:54:00.429Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T15:02:32.588Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T15:02:32.716Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T15:02:32.730Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T15:02:32.731Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T15:02:32.741Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T15:02:32.754Z INFO - Starting container for site
-2025-04-16T15:02:32.755Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_a107d7d8_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
-2025-04-16T15:02:32.756Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-TH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2762
-2025-04-16T15:02:32.281Z INFO - Logging is not enabled for this container.
-Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
-2025-04-16T15:02:33.295Z INFO - Initiating warmup request to container genaiops-backend_0_a107d7d8 for site genaiops-backend
-2025-04-16T15:02:36.341Z ERROR - Container genaiops-backend_0_a107d7d8 for site genaiops-backend has exited, failing site start
-2025-04-16T15:02:36.342Z INFO - Initiating warmup request to container genaiops-backend_0_a107d7d8_middleware for site genaiops-backend
-2025-04-16T15:02:36.585Z INFO - Container genaiops-backend_0_a107d7d8_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T15:02:36.593Z ERROR - Container genaiops-backend_0_a107d7d8 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T15:02:36.601Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T15:21:44.979Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T15:21:45.133Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T15:21:45.142Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T15:21:45.143Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T15:21:45.157Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T15:21:45.180Z INFO - Starting container for site
-2025-04-16T15:21:45.182Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_8084113f_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
-2025-04-16T15:21:45.183Z INFO - Logging is not enabled for this containe2025-04-16T15:21:45.939Z INFO - Initiating warmup request to container genaiops-backend_0_8084113f for site genaiops-backend
-2025-04-16T15:21:47.004Z ERROR - Container genaiops-backend_0_8084113f for site genaiops-backend has exited, failing site start
-2025-04-16T15:21:47.005Z INFO - Initiating warmup request to container genaiops-backend_0_8084113f_middleware for site genaiops-backend
-2025-04-16T15:21:48.232Z INFO - Container genaiops-backend_0_8084113f_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T15:21:48.240Z ERROR - Container genaiops-backend_0_8084113f didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T15:21:49.102Z INFO - Stopping site genaiops-backend because it failed during startup.
-2025-04-16T15:27:11.481Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T15:27:11.749Z INFO - stage3 Pulling from appsvc/middleware
-2025-04-16T15:27:11.909Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
-2025-04-16T15:27:11.911Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
-2025-04-16T15:27:11.990Z INFO - Pull Image successful, Time taken: 0 Seconds
-2025-04-16T15:27:12.053Z INFO - Starting container for site
-2025-04-16T15:27:12.055Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_dba762a8_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
-2025-04-16T15:27:12.056Z INFO - Logging is not enabled for this containe2025-04-16T15:27:13.234Z INFO - Initiating warmup request to container genaiops-backend_0_dba762a8 for site genaiops-backend
-2025-04-16T15:27:15.319Z ERROR - Container genaiops-backend_0_dba762a8 for site genaiops-backend has exited, failing site start
-2025-04-16T15:27:15.321Z INFO - Initiating warmup request to container genaiops-backend_0_dba762a8_middleware for site genaiops-backend
-2025-04-16T15:27:17.742Z INFO - Container genaiops-backend_0_dba762a8_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
-2025-04-16T15:27:17.750Z ERROR - Container genaiops-backend_0_dba762a8 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
-2025-04-16T15:27:17.767Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T15:29:59.961Z INFO - Initiating warmup request to container backendgenai_0_ce1911c5 for site backendgenai
+2025-04-16T15:30:10.708Z ERROR - Container backendgenai_0_ce1911c5 for site backendgenai has exited, failing site start
+2025-04-16T15:30:10.736Z ERROR - Container backendgenai_0_ce1911c5 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:30:10.848Z INFO - Stopping site backendgenai because it failed during startup.
