@@ -1,202 +1,389 @@
-# Streamlit UI
-if __name__ == "__main__":
-    st.set_page_config(page_title="Azure DevOps Pipeline", layout="wide")
-    
-    # Initialize session state for build_id if not exists
-    if 'build_id' not in st.session_state:
-        st.session_state.build_id = None
-    
-    # Create sidebar for navigation
-    page = st.sidebar.radio("Navigation", ["Trigger Pipeline", "Monitor Pipeline"])
-    
-    if page == "Trigger Pipeline":
-        st.title("Trigger Azure DevOps Pipeline")
-
-        # User input fields
-        terraform_version = st.text_input("Terraform Version", "1.6.6")
-        client_directory_name = st.text_input("Client Directory Name", "client-vinod")
-        environment = st.selectbox("Environment", ["dev", "prod"])
-        service_connection_name = st.text_input("Service Connection Name", "my-service-connection")
-        resource_group = st.text_input("Resource Group", "my-resource-group")
-        storage_account = st.text_input("Storage Account", "mystorageaccount")
-        container_name = st.text_input("Container Name", "mycontainer")
-        backend_key = st.text_input("Backend Key", "my-backend-key")
-        vm_image = st.selectbox("VM Image", ["ubuntu-latest", "windows-latest"])
-        
-        trigger_button = st.button("Run Azure DevOps Pipeline")
-        
-        if trigger_button:
-            # Parameters to send
-            parameters = {
-                "terraform_version": terraform_version,
-                "client_directory_name": client_directory_name,
-                "environment": environment,
-                "service_connection_name": service_connection_name,
-                "resource_group": resource_group,
-                "storage_account": storage_account,
-                "container_name": container_name,
-                "backend_key": backend_key,
-                "vm_image": vm_image
-            }
-            client = parameters['client_directory_name']
-            yaml_template = """
-trigger:
-  branches:
-    include:
-      - none
-
-
-parameters:
-  - name: terraform_version
-    type: string
-    default: '1.6.6'
-  - name: client_directory_name
-    type: string
-  - name: environment
-    type: string
-  - name: service_connection_name
-    type: string
-  - name: resource_group
-    type: string
-  - name: storage_account
-    type: string
-  - name: container_name
-    type: string
-  - name: backend_key
-    type: string
-  - name: vm_image
-    type: string
-    default: 'ubuntu-latest'
-
-variables:
-  terraformWorkingDirectory: '$(System.DefaultWorkingDirectory)/CLIENTS/${{ parameters.client_directory_name }}/terraform'
-
-stages:
-  - stage: Terraform
-    displayName: 'Terraform Deployment Stage - ${{ parameters.environment }}'
-    jobs:
-      - job: Deploy
-        displayName: 'Deploy Infrastructure'
-        pool:
-          vmImage: ${{ parameters.vm_image }}
-        steps:
-          - task: TerraformInstaller@0
-            displayName: 'Install Terraform'
-            inputs:
-              terraformVersion: ${{ parameters.terraform_version }}
-
-          - task: TerraformTaskV4@4
-            displayName: 'Terraform Init'
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              workingDirectory: '$(terraformWorkingDirectory)'
-              backendServiceArm: ${{ parameters.service_connection_name }}
-              backendAzureRmResourceGroupName: ${{ parameters.resource_group }}
-              backendAzureRmStorageAccountName: ${{ parameters.storage_account }}
-              backendAzureRmContainerName: ${{ parameters.container_name }}
-              backendAzureRmKey: ${{ parameters.backend_key }}
-
-          - task: TerraformTaskV4@4
-            displayName: 'Terraform Plan'
-            inputs:
-              provider: 'azurerm'
-              command: 'plan'
-              workingDirectory: '$(terraformWorkingDirectory)'
-              environmentServiceNameAzureRM: ${{ parameters.service_connection_name }}
-              commandOptions: '-var-file="environments/${{ parameters.environment }}.tfvars"'
-
-          - task: TerraformTaskV4@4
-            displayName: 'Terraform Apply'
-            inputs:
-              provider: 'azurerm'
-              command: 'apply'
-              workingDirectory: '$(terraformWorkingDirectory)'
-              environmentServiceNameAzureRM: ${{ parameters.service_connection_name }}
-              commandOptions: '-var-file="environments/${{ parameters.environment }}.tfvars"'
-            """
-            
-            with st.spinner("Creating/updating YAML and triggering pipeline..."):
-                try:
-                    result = manage_client_pipeline(client, yaml_template, parameters)
-                    st.success("Pipeline triggered successfully!")
-                    
-                    # Display pipeline details
-                    st.subheader("Pipeline Run Details")
-                    st.json(result)
-                    
-                    # Show the build ID if we have it
-                    if 'build_id' in st.session_state and st.session_state.build_id:
-                        st.info(f"Build ID: {st.session_state.build_id}")
-                        st.session_state.last_build_id = st.session_state.build_id
-                    
-                    if "url" in result:
-                        st.markdown(f"[View Pipeline Run in Azure DevOps]({result['url']})")
-                    
-                    # Store a flag to indicate we should show the monitor button
-                    st.session_state.show_monitor_button = True
-                except Exception as e:
-                    st.error(f"Error triggering pipeline: {str(e)}")
-                    st.exception(e)
-        
-        # Show monitor button after pipeline is triggered
-        if 'show_monitor_button' in st.session_state and st.session_state.show_monitor_button:
-            if st.button("Monitor Pipeline Progress"):
-                if 'build_id' in st.session_state and st.session_state.build_id:
-                    # Set a flag to switch to monitoring page
-                    st.session_state.page = "Monitor Pipeline"
-                    st.session_state.monitor_build_id = st.session_state.build_id
-                    st.experimental_rerun()
-                else:
-                    st.error("No build ID found. Please check the pipeline response or enter a build ID manually.")
-    
-    elif page == "Monitor Pipeline":
-        st.title("Monitor Pipeline Progress")
-        
-        # Check if we have a build ID from the trigger page
-        if 'monitor_build_id' in st.session_state:
-            build_id = st.session_state.monitor_build_id
-            st.info(f"Monitoring build ID: {build_id}")
-            # Clear the flag so we don't automatically monitor on page refresh
-            del st.session_state.monitor_build_id
-            # Start monitoring immediately
-            monitor_pipeline(build_id)
-        else:
-            # Option to enter a build ID manually or use the one from session state
-            use_existing = st.checkbox("Use last triggered build", value=True if 'last_build_id' in st.session_state else False)
-            
-            if use_existing and 'last_build_id' in st.session_state:
-                build_id = st.session_state.last_build_id
-                st.info(f"Using build ID: {build_id}")
-            else:
-                build_id = st.text_input("Enter Build ID")
-                
-                # Add a helper to explain where to find the build ID
-                st.markdown("""
-                **Where to find the Build ID:**
-                1. Go to your Azure DevOps pipeline run
-                2. Look at the URL, it will contain something like `/_build/results?buildId=12345`
-                3. The number after `buildId=` is your Build ID
-                """)
-            
-            monitor_button = st.button("Start Monitoring")
-            
-            if monitor_button:
-                if build_id:
-                    try:
-                        # Verify the build exists before monitoring
-                        with st.spinner("Verifying build..."):
-                            get_build(build_id)  # This will raise an error if the build doesn't exist
-                        
-                        monitor_pipeline(build_id)
-                    except Exception as e:
-                        st.error(f"Error accessing build: {str(e)}")
-                        st.markdown("""
-                        **Possible reasons for this error:**
-                        - The Build ID might be incorrect
-                        - The build might have been deleted
-                        - You might not have permission to access this build
-                        - The Service Principal credentials might be incorrect
-                        """)
-                else:
-                    st.error("Please enter a Build ID")
+2025-04-16T13:50:45.0408819Z Container image does not expose any ports. Defaulting to port 80
+2025-04-16T13:50:45.0409979Z Setting value of PORT variable to 80
+2025-04-16T13:50:45.0411609Z Creating container with image: xtrerra.azurecr.io/genaiops-backend:2755 from registry: xtrerra.azurecr.io and fully qualified image name: xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:50:45.1530754Z Starting container: 43c14965_genaiops-backend.
+2025-04-16T13:50:45.1684188Z Starting watchers and probes.
+2025-04-16T13:50:45.1687220Z Starting metrics collection.
+2025-04-16T13:50:45.1689073Z Container is running.
+2025-04-16T13:50:45.7058432Z Container start method finished after 915 ms.
+2025-04-16T13:50:46.3569188Z Container has finished running with exit code: 1.
+2025-04-16T13:50:46.3571967Z Container is terminating. Grace period: 5 seconds.
+2025-04-16T13:50:46.3576884Z Stop and delete container. Retry count = 0
+2025-04-16T13:50:46.3579223Z Stopping container: 43c14965_genaiops-backend.
+2025-04-16T13:50:46.3695085Z Deleting container: 43c14965_genaiops-backend. Retry count = 0
+2025-04-16T13:50:46.4160134Z Container spec TerminationMessagePolicy path
+2025-04-16T13:50:46.4172912Z Container is terminated. Total time elapsed: 59 ms.
+2025-04-16T13:50:46.4184217Z Site container: genaiops-backend terminated during site startup.
+2025-04-16T13:50:46.4196132Z Site startup probe failed after 0.7040491 seconds.
+2025-04-16T13:50:46.4248601Z Failed to start site. Revert by stopping site.
+2025-04-16T13:50:46.5304837Z Site: genaiops-backend will be blocked for 1 minutes till 04/16/2025 13:51:46
+2025-04-16T13:50:46.5476431Z Site: genaiops-backend stopped.
+2025-04-16T13:50:49.879Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:50:50.115Z INFO - 2755 Pulling from genaiops-backend
+2025-04-16T13:50:50.121Z INFO - 4a679ac3b09f Already exists
+2025-04-16T13:50:50.123Z INFO - 74018f7cfa8f Pulling fs layer
+2025-04-16T13:50:50.130Z INFO - a0b0cfc480ce Pulling fs layer
+2025-04-16T13:50:50.134Z INFO - 97d21b95fb00 Pulling fs layer
+2025-04-16T13:50:50.135Z INFO - 350112290db6 Pulling fs layer
+2025-04-16T13:50:50.136Z INFO - 07c8e82da438 Pulling fs layer
+2025-04-16T13:50:50.137Z INFO - 6a309cfa7206 Pulling fs layer
+2025-04-16T13:50:50.138Z INFO - 942e771df559 Pulling fs layer
+2025-04-16T13:50:50.186Z INFO - 942e771df559 Downloading 38KB / 38KB
+2025-04-16T13:50:50.187Z INFO - 942e771df559 Verifying Checksum
+2025-04-16T13:50:50.188Z INFO - 942e771df559 Download complete
+2025-04-16T13:50:50.192Z INFO - 350112290db6 Downloading 93B / 93B
+2025-04-16T13:50:50.193Z INFO - 350112290db6 Verifying Checksum
+2025-04-16T13:50:50.194Z INFO - 350112290db6 Download complete
+2025-04-16T13:50:50.220Z INFO - 97d21b95fb00 Downloading 250B / 250B
+2025-04-16T13:50:50.221Z INFO - 07c8e82da438 Downloading 274B / 274B
+2025-04-16T13:50:50.222Z INFO - 07c8e82da438 Verifying Checksum
+2025-04-16T13:50:50.223Z INFO - 07c8e82da438 Download complete
+2025-04-16T13:50:50.224Z INFO - 97d21b95fb00 Verifying Checksum
+2025-04-16T13:50:50.225Z INFO - 97d21b95fb00 Download complete
+2025-04-16T13:50:50.269Z INFO - 74018f7cfa8f Verifying Checksum
+2025-04-16T13:50:50.275Z INFO - 74018f7cfa8f Download complete
+2025-04-16T13:50:50.295Z INFO - 6a309cfa7206 Downloading 527KB / 76MB
+2025-04-16T13:50:50.338Z INFO - a0b0cfc480ce Verifying Checksum
+2025-04-16T13:50:50.343Z INFO - a0b0cfc480ce Download complete
+2025-04-16T13:50:50.512Z INFO - 6a309cfa7206 Downloading 15MB / 76MB
+2025-04-16T13:50:50.619Z INFO - 6a309cfa7206 Downloading 40MB / 76MB
+2025-04-16T13:50:50.663Z INFO - 74018f7cfa8f Extracting 3MB / 3MB
+2025-04-16T13:50:50.679Z INFO - 74018f7cfa8f Extracting 3MB / 3MB
+2025-04-16T13:50:50.692Z INFO - 74018f7cfa8f Pull complete
+2025-04-16T13:50:50.721Z INFO - 6a309cfa7206 Downloading 58MB / 76MB
+2025-04-16T13:50:50.823Z INFO - 6a309cfa7206 Downloading 75MB / 76MB
+2025-04-16T13:50:50.828Z INFO - 6a309cfa7206 Verifying Checksum
+2025-04-16T13:50:50.829Z INFO - 6a309cfa7206 Download complete
+2025-04-16T13:50:50.939Z INFO - a0b0cfc480ce Extracting 4MB / 14MB
+2025-04-16T13:50:52.737Z INFO - a0b0cfc480ce Extracting 11MB / 14MB
+2025-04-16T13:50:52.738Z INFO - a0b0cfc480ce Extracting 14MB / 14MB
+2025-04-16T13:50:52.740Z INFO - a0b0cfc480ce Pull complete
+2025-04-16T13:50:52.741Z INFO - 97d21b95fb00 Extracting 250B / 250B
+2025-04-16T13:50:52.742Z INFO - 97d21b95fb00 Extracting 250B / 250B
+2025-04-16T13:50:52.743Z INFO - 97d21b95fb00 Pull complete
+2025-04-16T13:50:52.744Z INFO - 350112290db6 Extracting 93B / 93B
+2025-04-16T13:50:52.745Z INFO - 350112290db6 Extracting 93B / 93B
+2025-04-16T13:50:52.746Z INFO - 350112290db6 Pull complete
+2025-04-16T13:50:52.747Z INFO - 07c8e82da438 Extracting 274B / 274B
+2025-04-16T13:50:52.748Z INFO - 07c8e82da438 Extracting 274B / 274B
+2025-04-16T13:50:52.749Z INFO - 07c8e82da438 Pull complete
+2025-04-16T13:50:52.751Z INFO - 6a309cfa7206 Extracting 544KB / 76MB
+2025-04-16T13:50:52.752Z INFO - 6a309cfa7206 Extracting 2MB / 76MB
+2025-04-16T13:50:52.814Z INFO - 6a309cfa7206 Extracting 4MB / 76MB
+2025-04-16T13:50:53.217Z INFO - 6a309cfa7206 Extracting 7MB / 76MB
+2025-04-16T13:50:53.328Z INFO - 6a309cfa7206 Extracting 9MB / 76MB
+2025-04-16T13:50:53.437Z INFO - 6a309cfa7206 Extracting 12MB / 76MB
+2025-04-16T13:50:53.539Z INFO - 6a309cfa7206 Extracting 13MB / 76MB
+2025-04-16T13:50:53.649Z INFO - 6a309cfa7206 Extracting 14MB / 76MB
+2025-04-16T13:50:53.762Z INFO - 6a309cfa7206 Extracting 15MB / 76MB
+2025-04-16T13:50:53.874Z INFO - 6a309cfa7206 Extracting 17MB / 76MB
+2025-04-16T13:50:53.984Z INFO - 6a309cfa7206 Extracting 20MB / 76MB
+2025-04-16T13:50:54.092Z INFO - 6a309cfa7206 Extracting 23MB / 76MB
+2025-04-16T13:50:54.327Z INFO - 6a309cfa7206 Extracting 30MB / 76MB
+2025-04-16T13:50:54.619Z INFO - 6a309cfa7206 Extracting 34MB / 76MB
+2025-04-16T13:50:54.729Z INFO - 6a309cfa7206 Extracting 35MB / 76MB
+2025-04-16T13:50:54.841Z INFO - 6a309cfa7206 Extracting 37MB / 76MB
+2025-04-16T13:50:55.131Z INFO - 6a309cfa7206 Extracting 38MB / 76MB
+2025-04-16T13:50:55.353Z INFO - 6a309cfa7206 Extracting 44MB / 76MB
+2025-04-16T13:50:55.495Z INFO - 6a309cfa7206 Extracting 47MB / 76MB
+2025-04-16T13:50:55.603Z INFO - 6a309cfa7206 Extracting 49MB / 76MB
+2025-04-16T13:50:55.906Z INFO - 6a309cfa7206 Extracting 52MB / 76MB
+2025-04-16T13:50:56.252Z INFO - 6a309cfa7206 Extracting 55MB / 76MB
+2025-04-16T13:50:56.416Z INFO - 6a309cfa7206 Extracting 56MB / 76MB
+2025-04-16T13:50:56.645Z INFO - 6a309cfa7206 Extracting 60MB / 76MB
+2025-04-16T13:50:56.892Z INFO - 6a309cfa7206 Extracting 64MB / 76MB
+2025-04-16T13:50:57.062Z INFO - 6a309cfa7206 Extracting 65MB / 76MB
+2025-04-16T13:50:57.511Z INFO - 6a309cfa7206 Extracting 70MB / 76MB
+2025-04-16T13:50:57.697Z INFO - 6a309cfa7206 Extracting 70MB / 76MB
+2025-04-16T13:50:57.805Z INFO - 6a309cfa7206 Extracting 73MB / 76MB
+2025-04-16T13:50:57.967Z INFO - 6a309cfa7206 Extracting 76MB / 76MB
+2025-04-16T13:50:58.096Z INFO - 6a309cfa7206 Pull complete
+2025-04-16T13:50:58.097Z INFO - 942e771df559 Extracting 32KB / 38KB
+2025-04-16T13:50:58.105Z INFO - 942e771df559 Extracting 38KB / 38KB
+2025-04-16T13:50:58.107Z INFO - 942e771df559 Extracting 38KB / 38KB
+2025-04-16T13:50:58.126Z INFO - 942e771df559 Pull complete
+2025-04-16T13:50:58.157Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
+2025-04-16T13:50:58.159Z INFO - Status: Downloaded newer image for xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:50:58.170Z INFO - Pull Image successful, Time taken: 8 Seconds
+2025-04-16T13:50:58.430Z INFO - Starting container for site
+2025-04-16T13:50:58.431Z INFO - docker run -d --expose=80 --name genaiops-backend_0_36ede669 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:50:58.432Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T13:50:59.529Z INFO - Initiating warmup request to container genaiops-backend_0_36ede669 for site genaiops-backend
+2025-04-16T13:51:01.575Z ERROR - Container genaiops-backend_0_36ede669 for site genaiops-backend has exited, failing site start
+2025-04-16T13:51:01.589Z ERROR - Container genaiops-backend_0_36ede669 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T13:51:01.612Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T13:51:10.429Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:51:10.564Z INFO - 2755 Pulling from genaiops-backend
+2025-04-16T13:51:10.575Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
+2025-04-16T13:51:10.576Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:51:10.587Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T13:51:10.607Z INFO - Starting container for site
+2025-04-16T13:51:10.608Z INFO - docker run -d --expose=80 --name genaiops-backend_0_491579c6 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:51:10.609Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T13:51:11.297Z INFO - Initiating warmup request to container genaiops-backend_0_491579c6 for site genaiops-backend
+2025-04-16T13:51:13.328Z ERROR - Container genaiops-backend_0_491579c6 for site genaiops-backend has exited, failing site start
+2025-04-16T13:51:13.338Z ERROR - Container genaiops-backend_0_491579c6 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T13:51:13.342Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T13:53:27.071Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:53:27.237Z INFO - 2755 Pulling from genaiops-backend
+2025-04-16T13:53:27.245Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
+2025-04-16T13:53:27.246Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:53:27.255Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T13:53:27.271Z INFO - Starting container for site
+2025-04-16T13:53:27.273Z INFO - docker run -d --expose=80 --name genaiops-backend_0_0fd3a4b2 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:53:27.274Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T13:53:28.428Z INFO - Initiating warmup request to container genaiops-backend_0_0fd3a4b2 for site genaiops-backend
+2025-04-16T13:53:30.313Z ERROR - Container genaiops-backend_0_0fd3a4b2 for site genaiops-backend has exited, failing site start
+2025-04-16T13:53:30.319Z ERROR - Container genaiops-backend_0_0fd3a4b2 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T13:53:30.321Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T13:54:52.016Z INFO - Pulling image: xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:54:52.163Z INFO - 2755 Pulling from genaiops-backend
+2025-04-16T13:54:52.174Z INFO - Digest: sha256:6e6ece618925a470d24f939aa31b9fde2580b5eefbd4fc1380afa0ccaf20d93a
+2025-04-16T13:54:52.175Z INFO - Status: Image is up to date for xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:54:52.183Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T13:54:53.768Z INFO - Starting container for site
+2025-04-16T13:54:53.770Z INFO - docker run -d --expose=80 --name genaiops-backend_0_66a346dc -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2755
+2025-04-16T13:54:53.771Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T13:54:54.127Z INFO - Initiating warmup request to container genaiops-backend_0_66a346dc for site genaiops-backend
+2025-04-16T13:54:56.188Z ERROR - Container genaiops-backend_0_66a346dc for site genaiops-backend has exited, failing site start
+2025-04-16T13:54:56.205Z ERROR - Container genaiops-backend_0_66a346dc didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T13:54:56.214Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T13:59:42.4134997Z Container start method called.
+2025-04-16T13:59:42.4136059Z Establishing network.
+2025-04-16T13:59:42.4137072Z Pulling image: xtrerra.azurecr.io/genaiops-backend:2756.
+2025-04-16T13:59:42.8060791Z Image xtrerra.azurecr.io/genaiops-backend:2756 is pulled from registry xtrerra.azurecr.io
+2025-04-16T13:59:42.8063477Z Container is starting.
+2025-04-16T13:59:42.8074259Z Establishing user namespace if not established already.
+2025-04-16T13:59:42.8077793Z Establishing network if not established already.
+2025-04-16T13:59:42.8081197Z Mounting volumes.
+2025-04-16T13:59:42.8086076Z Nested mountpoint volatile/logs
+2025-04-16T13:59:42.8104823Z Nested mountpoint
+2025-04-16T13:59:42.8290518Z Creating container.
+2025-04-16T13:59:42.8292786Z Creating pipes for streaming container io.
+2025-04-16T13:59:42.8294794Z Creating stdout named pipe at /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
+2025-04-16T13:59:42.8297714Z Successfully created stdout named pipe at: /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
+2025-04-16T13:59:42.8300793Z Opening named pipe /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa for reading in non-blocking mode.
+2025-04-16T13:59:42.8303177Z Successfully opened named pipe: /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
+2025-04-16T13:59:42.8305151Z Successfully removed non-blocking flag from /podr/container/pipe/312a4727_genaiops-backend/stdout_cde306825577422e93cd606b6fd778fa.
+2025-04-16T13:59:42.8307188Z Creating stderr named pipe at /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
+2025-04-16T13:59:42.8309635Z Successfully created stderr named pipe at: /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
+2025-04-16T13:59:42.8312841Z Opening named pipe /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b for reading in non-blocking mode.
+2025-04-16T13:59:42.8314936Z Successfully opened named pipe: /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
+2025-04-16T13:59:42.8316858Z Successfully removed non-blocking flag from /podr/container/pipe/312a4727_genaiops-backend/stderr_6e6dbaa41ea04eccbc20bc0abc054e1b.
+2025-04-16T13:59:42.8718834Z Container image does not expose any ports. Defaulting to port 80
+2025-04-16T13:59:42.8721022Z Setting value of PORT variable to 80
+2025-04-16T13:59:42.8723527Z Creating container with image: xtrerra.azurecr.io/genaiops-backend:2756 from registry: xtrerra.azurecr.io and fully qualified image name: xtrerra.azurecr.io/genaiops-backend:2756
+2025-04-16T13:59:42.9783994Z Starting container: 312a4727_genaiops-backend.
+2025-04-16T13:59:43.0003064Z Starting watchers and probes.
+2025-04-16T13:59:43.0014596Z Starting metrics collection.
+2025-04-16T13:59:43.0077963Z Container is running.
+2025-04-16T13:59:43.0248090Z Container start method finished after 610 ms.
+2025-04-16T13:59:44.2719601Z Container has finished running with exit code: 1.
+2025-04-16T13:59:44.2720817Z Container is terminating. Grace period: 5 seconds.
+2025-04-16T13:59:44.2723702Z Stop and delete container. Retry count = 0
+2025-04-16T13:59:44.2724676Z Stopping container: 312a4727_genaiops-backend.
+2025-04-16T13:59:44.2839932Z Deleting container: 312a4727_genaiops-backend. Retry count = 0
+2025-04-16T13:59:44.7028189Z Site: genaiops-backend stopped.
+2025-04-16T13:59:48.500Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T13:59:48.600Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T13:59:48.612Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T13:59:48.613Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T13:59:48.626Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T13:59:49.797Z INFO - Starting container for site
+2025-04-16T13:59:49.799Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_5b8626a3_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.132.2:80 /Host.UseFileLogging=true
+2025-04-16T13:59:49.800Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+TH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2756
+2025-04-16T13:59:48.140Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T13:59:50.474Z INFO - Initiating warmup request to container genaiops-backend_0_5b8626a3 for site genaiops-backend
+2025-04-16T13:59:51.507Z ERROR - Container genaiops-backend_0_5b8626a3 for site genaiops-backend has exited, failing site start
+2025-04-16T13:59:51.508Z INFO - Initiating warmup request to container genaiops-backend_0_5b8626a3_middleware for site genaiops-backend
+2025-04-16T13:59:52.749Z INFO - Container genaiops-backend_0_5b8626a3_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T13:59:52.760Z ERROR - Container genaiops-backend_0_5b8626a3 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T13:59:52.767Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:02:56.109Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:02:56.205Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:02:56.216Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:02:56.218Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:02:56.231Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:02:56.267Z INFO - Starting container for site
+2025-04-16T14:02:56.268Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_e7fcef3b_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:80 /Host.UseFileLogging=true
+2025-04-16T14:02:56.270Z INFO - Logging is not enabled for this containe2025-04-16T14:02:57.115Z INFO - Initiating warmup request to container genaiops-backend_0_e7fcef3b for site genaiops-backend
+2025-04-16T14:03:00.407Z ERROR - Container genaiops-backend_0_e7fcef3b for site genaiops-backend has exited, failing site start
+2025-04-16T14:03:00.408Z INFO - Initiating warmup request to container genaiops-backend_0_e7fcef3b_middleware for site genaiops-backend
+2025-04-16T14:03:00.624Z INFO - Container genaiops-backend_0_e7fcef3b_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:03:00.632Z ERROR - Container genaiops-backend_0_e7fcef3b didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T14:03:00.638Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:10:06.603Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:10:06.709Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:10:06.722Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:10:06.723Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:10:06.734Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:10:06.755Z INFO - Starting container for site
+2025-04-16T14:10:06.756Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_a9eb5fe6_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:80 /Host.UseFileLogging=true
+2025-04-16T14:10:06.757Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+.282Z INFO - Pull Image successful, Time taken: 1 Seconds
+2025-04-16T14:10:06.255Z INFO - Starting container for site
+2025-04-16T14:10:06.255Z INFO - docker run -d --expose=80 --name genaiops-backend_0_a9eb5fe6 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2757
+2025-04-16T14:10:06.255Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T14:10:07.685Z INFO - Initiating warmup request to container genaiops-backend_0_a9eb5fe6 for site genaiops-backend
+2025-04-16T14:10:09.720Z ERROR - Container genaiops-backend_0_a9eb5fe6 for site genaiops-backend has exited, failing site start
+2025-04-16T14:10:09.720Z INFO - Initiating warmup request to container genaiops-backend_0_a9eb5fe6_middleware for site genaiops-backend
+2025-04-16T14:10:09.957Z INFO - Container genaiops-backend_0_a9eb5fe6_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:10:09.966Z ERROR - Container genaiops-backend_0_a9eb5fe6 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T14:10:10.760Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:16:34.402Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:16:34.605Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:16:34.617Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:16:34.618Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:16:34.636Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:16:34.660Z INFO - Starting container for site
+2025-04-16T14:16:34.661Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_cb64f1bd_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:80 /Host.UseFileLogging=true
+2025-04-16T14:16:34.662Z INFO - Logging is not enabled for this container.
+Please u2025-04-16T14:16:35.230Z INFO - Initiating warmup request to container genaiops-backend_0_cb64f1bd for site genaiops-backend
+2025-04-16T14:16:38.277Z ERROR - Container genaiops-backend_0_cb64f1bd for site genaiops-backend has exited, failing site start
+2025-04-16T14:16:38.278Z INFO - Initiating warmup request to container genaiops-backend_0_cb64f1bd_middleware for site genaiops-backend
+2025-04-16T14:16:38.495Z INFO - Container genaiops-backend_0_cb64f1bd_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:16:38.519Z ERROR - Container genaiops-backend_0_cb64f1bd didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T14:16:38.534Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:19:48.589Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:19:48.724Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:19:48.732Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:19:48.733Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:19:48.753Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:19:51.373Z INFO - Starting container for site
+2025-04-16T14:19:51.373Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_09935c10_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=8080 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:8080 /Host.UseFileLogging=true
+2025-04-16T14:19:51.373Z INFO - Logging is not enabled for this containe2025-04-16T14:19:52.368Z INFO - Initiating warmup request to container genaiops-backend_0_09935c10 for site genaiops-backend
+2025-04-16T14:19:52.393Z ERROR - Container genaiops-backend_0_09935c10 for site genaiops-backend has exited, failing site start
+2025-04-16T14:19:52.393Z INFO - Initiating warmup request to container genaiops-backend_0_09935c10_middleware for site genaiops-backend
+2025-04-16T14:19:53.624Z INFO - Container genaiops-backend_0_09935c10_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:19:53.631Z ERROR - Container genaiops-backend_0_09935c10 didn't respond to HTTP pings on port: 8080. Failing site start. See container logs for debugging.
+2025-04-16T14:19:53.640Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:25:33.071Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:25:33.174Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:25:33.184Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:25:33.185Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:25:33.199Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:25:33.214Z INFO - Starting container for site
+2025-04-16T14:25:33.216Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_59674c22_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=8080 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:8080 /Host.UseFileLogging=true
+2025-04-16T14:25:33.218Z INFO - Logging is not enabled for this containe2025-04-16T14:25:34.219Z INFO - Initiating warmup request to container genaiops-backend_0_59674c22 for site genaiops-backend
+2025-04-16T14:25:36.253Z ERROR - Container genaiops-backend_0_59674c22 for site genaiops-backend has exited, failing site start
+2025-04-16T14:25:36.254Z INFO - Initiating warmup request to container genaiops-backend_0_59674c22_middleware for site genaiops-backend
+2025-04-16T14:25:36.484Z INFO - Container genaiops-backend_0_59674c22_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:25:36.491Z ERROR - Container genaiops-backend_0_59674c22 didn't respond to HTTP pings on port: 8080. Failing site start. See container logs for debugging.
+2025-04-16T14:25:36.510Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:36:00.234Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:36:00.738Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:36:00.747Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:36:00.747Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:36:00.757Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:36:00.783Z INFO - Starting container for site
+2025-04-16T14:36:00.783Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_49f5c11c_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
+2025-04-16T14:36:00.783Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+TH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2760
+2025-04-16T14:35:59.821Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T14:36:01.318Z INFO - Initiating warmup request to container genaiops-backend_0_49f5c11c for site genaiops-backend
+2025-04-16T14:36:03.389Z ERROR - Container genaiops-backend_0_49f5c11c for site genaiops-backend has exited, failing site start
+2025-04-16T14:36:03.390Z INFO - Initiating warmup request to container genaiops-backend_0_49f5c11c_middleware for site genaiops-backend
+2025-04-16T14:36:04.636Z INFO - Container genaiops-backend_0_49f5c11c_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:36:04.646Z ERROR - Container genaiops-backend_0_49f5c11c didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T14:36:04.654Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:44:25.517Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:44:25.740Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:44:25.753Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:44:25.755Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:44:25.772Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:44:25.796Z INFO - Starting container for site
+2025-04-16T14:44:25.797Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_d639a0d2_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.4:80 /Host.UseFileLogging=true
+2025-04-16T14:44:25.799Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+.810Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:44:24.813Z INFO - Starting container for site
+2025-04-16T14:44:24.815Z INFO - docker run -d --expose=80 --name genaiops-backend_0_d639a0d2 -e WEBSITE_USE_DIAGNOSTIC_SERVER=false -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e PORT=80 -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2761
+2025-04-16T14:44:24.829Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T14:44:27.222Z INFO - Initiating warmup request to container genaiops-backend_0_d639a0d2 for site genaiops-backend
+2025-04-16T14:44:27.291Z ERROR - Container genaiops-backend_0_d639a0d2 for site genaiops-backend has exited, failing site start
+2025-04-16T14:44:27.292Z INFO - Initiating warmup request to container genaiops-backend_0_d639a0d2_middleware for site genaiops-backend
+2025-04-16T14:44:29.528Z INFO - Container genaiops-backend_0_d639a0d2_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:44:29.538Z ERROR - Container genaiops-backend_0_d639a0d2 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T14:44:29.547Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:49:29.858Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:49:29.958Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:49:29.969Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:49:29.970Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:49:29.981Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:49:30.000Z INFO - Starting container for site
+2025-04-16T14:49:30.001Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_39e00309_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=8080 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.2:8080 /Host.UseFileLogging=true
+2025-04-16T14:49:30.002Z INFO - Logging is not enabled for this containe2025-04-16T14:49:30.533Z INFO - Initiating warmup request to container genaiops-backend_0_39e00309 for site genaiops-backend
+2025-04-16T14:49:32.730Z ERROR - Container genaiops-backend_0_39e00309 for site genaiops-backend has exited, failing site start
+2025-04-16T14:49:32.731Z INFO - Initiating warmup request to container genaiops-backend_0_39e00309_middleware for site genaiops-backend
+2025-04-16T14:49:32.987Z INFO - Container genaiops-backend_0_39e00309_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:49:32.995Z ERROR - Container genaiops-backend_0_39e00309 didn't respond to HTTP pings on port: 8080. Failing site start. See container logs for debugging.
+2025-04-16T14:49:33.009Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T14:53:56.885Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:53:56.994Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T14:53:57.005Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T14:53:57.006Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T14:53:57.015Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T14:53:57.033Z INFO - Starting container for site
+2025-04-16T14:53:57.034Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_63854cc1_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
+2025-04-16T14:53:57.035Z INFO - Logging is not enabled for this containe2025-04-16T14:53:58.150Z INFO - Initiating warmup request to container genaiops-backend_0_63854cc1 for site genaiops-backend
+2025-04-16T14:53:59.195Z ERROR - Container genaiops-backend_0_63854cc1 for site genaiops-backend has exited, failing site start
+2025-04-16T14:53:59.195Z INFO - Initiating warmup request to container genaiops-backend_0_63854cc1_middleware for site genaiops-backend
+2025-04-16T14:54:00.416Z INFO - Container genaiops-backend_0_63854cc1_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T14:54:00.423Z ERROR - Container genaiops-backend_0_63854cc1 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T14:54:00.429Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T15:02:32.588Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T15:02:32.716Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T15:02:32.730Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T15:02:32.731Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T15:02:32.741Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T15:02:32.754Z INFO - Starting container for site
+2025-04-16T15:02:32.755Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_a107d7d8_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
+2025-04-16T15:02:32.756Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+TH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 xtrerra.azurecr.io/genaiops-backend:2762
+2025-04-16T15:02:32.281Z INFO - Logging is not enabled for this container.
+Please use https://aka.ms/linux-diagnostics to enable logging to see container logs here.
+2025-04-16T15:02:33.295Z INFO - Initiating warmup request to container genaiops-backend_0_a107d7d8 for site genaiops-backend
+2025-04-16T15:02:36.341Z ERROR - Container genaiops-backend_0_a107d7d8 for site genaiops-backend has exited, failing site start
+2025-04-16T15:02:36.342Z INFO - Initiating warmup request to container genaiops-backend_0_a107d7d8_middleware for site genaiops-backend
+2025-04-16T15:02:36.585Z INFO - Container genaiops-backend_0_a107d7d8_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T15:02:36.593Z ERROR - Container genaiops-backend_0_a107d7d8 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:02:36.601Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T15:21:44.979Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T15:21:45.133Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T15:21:45.142Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T15:21:45.143Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T15:21:45.157Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T15:21:45.180Z INFO - Starting container for site
+2025-04-16T15:21:45.182Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_8084113f_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
+2025-04-16T15:21:45.183Z INFO - Logging is not enabled for this containe2025-04-16T15:21:45.939Z INFO - Initiating warmup request to container genaiops-backend_0_8084113f for site genaiops-backend
+2025-04-16T15:21:47.004Z ERROR - Container genaiops-backend_0_8084113f for site genaiops-backend has exited, failing site start
+2025-04-16T15:21:47.005Z INFO - Initiating warmup request to container genaiops-backend_0_8084113f_middleware for site genaiops-backend
+2025-04-16T15:21:48.232Z INFO - Container genaiops-backend_0_8084113f_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T15:21:48.240Z ERROR - Container genaiops-backend_0_8084113f didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:21:49.102Z INFO - Stopping site genaiops-backend because it failed during startup.
+2025-04-16T15:27:11.481Z INFO - Pulling image: mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T15:27:11.749Z INFO - stage3 Pulling from appsvc/middleware
+2025-04-16T15:27:11.909Z INFO - Digest: sha256:775b61befb45b8864ca42f6e9653fca338c7c85a6161882e7c04eedb86cd57d3
+2025-04-16T15:27:11.911Z INFO - Status: Image is up to date for mcr.microsoft.com/appsvc/middleware:stage3
+2025-04-16T15:27:11.990Z INFO - Pull Image successful, Time taken: 0 Seconds
+2025-04-16T15:27:12.053Z INFO - Starting container for site
+2025-04-16T15:27:12.055Z INFO - docker run -d --expose=8181 --name genaiops-backend_0_dba762a8_middleware -e WEBSITE_CORS_ALLOWED_ORIGINS=*,https://genaiops-cockpit.azurewebsites.net -e WEBSITE_CORS_SUPPORT_CREDENTIALS=False -e PORT=80 -e WEBSITES_ENABLE_APP_SERVICE_STORAGE=false -e WEBSITES_PORT=80 -e WEBSITE_SITE_NAME=genaiops-backend -e WEBSITE_AUTH_ENABLED=False -e WEBSITE_ROLE_INSTANCE_ID=0 -e WEBSITE_HOSTNAME=genaiops-backend.azurewebsites.net -e WEBSITE_INSTANCE_ID=4271866a507332a41799d11d56fd0316a914c73b83c92b42ff8cd64ab98bbc24 mcr.microsoft.com/appsvc/middleware:stage3 /Host.ListenUrl=http://0.0.0.0:8181 /Host.DestinationHostUrl=http://169.254.131.3:80 /Host.UseFileLogging=true
+2025-04-16T15:27:12.056Z INFO - Logging is not enabled for this containe2025-04-16T15:27:13.234Z INFO - Initiating warmup request to container genaiops-backend_0_dba762a8 for site genaiops-backend
+2025-04-16T15:27:15.319Z ERROR - Container genaiops-backend_0_dba762a8 for site genaiops-backend has exited, failing site start
+2025-04-16T15:27:15.321Z INFO - Initiating warmup request to container genaiops-backend_0_dba762a8_middleware for site genaiops-backend
+2025-04-16T15:27:17.742Z INFO - Container genaiops-backend_0_dba762a8_middleware for site genaiops-backend initialized successfully and is ready to serve requests.
+2025-04-16T15:27:17.750Z ERROR - Container genaiops-backend_0_dba762a8 didn't respond to HTTP pings on port: 80. Failing site start. See container logs for debugging.
+2025-04-16T15:27:17.767Z INFO - Stopping site genaiops-backend because it failed during startup.
