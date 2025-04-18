@@ -1,4 +1,3 @@
-
 import logging
 import azure.functions as func
 from azure.cosmos import CosmosClient, exceptions
@@ -71,16 +70,36 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             os.environ["MLOPS_COSMOS_ENDPOINT"],
             os.environ["MLOPS_COSMOS_KEY"]
         )
-        source_db = source_client.get_database_client(os.environ["MLOPS_DATABASE_NAME"])
-        logging.info(f"Connected to source database: {os.environ['MLOPS_DATABASE_NAME']}")
+        source_db_name = os.environ["MLOPS_DATABASE_NAME"]
+        source_db = source_client.get_database_client(source_db_name)
+        logging.info(f"Connected to source database: {source_db_name}")
         
         # Destination (XOPS) connection
         dest_client = CosmosClient(
             os.environ["DEST_COSMOS_ENDPOINT"],
             os.environ["DEST_COSMOS_KEY"]
         )
-        dest_db = dest_client.get_database_client(os.environ["DEST_DATABASE_NAME"])
-        logging.info(f"Connected to destination database: {os.environ['DEST_DATABASE_NAME']}")
+        
+        # Create the destination database if it doesn't exist
+        dest_db_name = os.environ["DEST_DATABASE_NAME"]
+        
+        # Check if database exists, if not create it
+        database_list = list(dest_client.list_databases())
+        database_exists = any(db['id'] == dest_db_name for db in database_list)
+        
+        if not database_exists:
+            logging.info(f"Creating destination database: {dest_db_name}")
+            try:
+                dest_db = dest_client.create_database(id=dest_db_name)
+                logging.info(f"Created destination database: {dest_db_name}")
+            except Exception as e:
+                logging.error(f"Error creating database {dest_db_name}: {str(e)}")
+                raise
+        else:
+            logging.info(f"Database {dest_db_name} already exists")
+            dest_db = dest_client.get_database_client(dest_db_name)
+        
+        logging.info(f"Connected to destination database: {dest_db_name}")
         
         # Get list of containers
         containers = list(source_db.list_containers())
@@ -145,54 +164,3 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             body=error_msg,
             status_code=500
         )
-
-
-
-
-
-Executing 'Functions.functionCopyData' (Reason='This function was programmatically called via the host APIs.', Id=b835d70b-ec1e-49de-8bf0-666b5525adbc)
-4/17/2025, 2:46:47 PM
-Information
-Starting full database copy process...
-4/17/2025, 2:46:47 PM
-Information
-Request URL: 'https://wtw-quotes-database-aqi.documents.azure.com:443/' Request method: 'GET' Request headers: 'Cache-Control': 'no-cache' 'x-ms-version': 'REDACTED' 'x-ms-documentdb-query-iscontinuationexpected': 'REDACTED' 'x-ms-date': 'REDACTED' 'authorization': 'REDACTED' 'Accept': 'application/json' 'Content-Length': '0' 'User-Agent': 'azsdk-python-cosmos/4.9.0 Python/3.11.12 (Linux-5.15.173.1-2.cm2-x86_64-with-glibc2.31)' No body was attached to the request
-4/17/2025, 2:46:47 PM
-Information
-Response status: 200 Response headers: 'Content-Length': '1649' 'Date': 'Thu, 17 Apr 2025 14:46:47 GMT' 'Content-Type': 'application/json' 'Server': 'Microsoft-HTTPAPI/2.0' 'x-ms-gatewayversion': 'REDACTED' 'Cache-Control': 'no-store, no-cache' 'Pragma': 'no-cache' 'x-ms-max-media-storage-usage-mb': 'REDACTED' 'x-ms-media-storage-usage-mb': 'REDACTED' 'x-ms-databaseaccount-consumed-mb': 'REDACTED' 'x-ms-databaseaccount-reserved-mb': 'REDACTED' 'x-ms-databaseaccount-provisioned-mb': 'REDACTED' 'Strict-Transport-Security': 'REDACTED' 'Content-Location': 'REDACTED'
-4/17/2025, 2:46:47 PM
-Information
-Connected to source database: pipeline_db
-4/17/2025, 2:46:47 PM
-Information
-Request URL: 'https://azxopsdevmlopscosmosdb.documents.azure.com:443/' Request method: 'GET' Request headers: 'Cache-Control': 'no-cache' 'x-ms-version': 'REDACTED' 'x-ms-documentdb-query-iscontinuationexpected': 'REDACTED' 'x-ms-date': 'REDACTED' 'authorization': 'REDACTED' 'Accept': 'application/json' 'Content-Length': '0' 'User-Agent': 'azsdk-python-cosmos/4.9.0 Python/3.11.12 (Linux-5.15.173.1-2.cm2-x86_64-with-glibc2.31)' No body was attached to the request
-4/17/2025, 2:46:47 PM
-Information
-Response status: 200 Response headers: 'Content-Length': '1755' 'Date': 'Thu, 17 Apr 2025 14:46:46 GMT' 'Content-Type': 'application/json' 'Server': 'Microsoft-HTTPAPI/2.0' 'x-ms-gatewayversion': 'REDACTED' 'Cache-Control': 'no-store, no-cache' 'Pragma': 'no-cache' 'x-ms-max-media-storage-usage-mb': 'REDACTED' 'x-ms-media-storage-usage-mb': 'REDACTED' 'x-ms-databaseaccount-consumed-mb': 'REDACTED' 'x-ms-databaseaccount-reserved-mb': 'REDACTED' 'x-ms-databaseaccount-provisioned-mb': 'REDACTED' 'Strict-Transport-Security': 'REDACTED' 'Content-Location': 'REDACTED'
-4/17/2025, 2:46:47 PM
-Information
-Connected to destination database: pipeline_db
-4/17/2025, 2:46:47 PM
-Information
-Request URL: 'https://wtw-quotes-database-aqi-eastus.documents.azure.com:443/dbs/pipeline_db/colls/' Request method: 'GET' Request headers: 'Cache-Control': 'no-cache' 'x-ms-version': 'REDACTED' 'x-ms-documentdb-query-iscontinuationexpected': 'REDACTED' 'x-ms-consistency-level': 'REDACTED' 'x-ms-date': 'REDACTED' 'authorization': 'REDACTED' 'Accept': 'application/json' 'Content-Length': '0' 'User-Agent': 'azsdk-python-cosmos/4.9.0 Python/3.11.12 (Linux-5.15.173.1-2.cm2-x86_64-with-glibc2.31)' No body was attached to the request
-4/17/2025, 2:46:48 PM
-Information
-Response status: 200 Response headers: 'Content-Length': '5842' 'Date': 'Thu, 17 Apr 2025 14:46:47 GMT' 'Content-Type': 'application/json' 'Server': 'Microsoft-HTTPAPI/2.0' 'x-ms-gatewayversion': 'REDACTED' 'Cache-Control': 'no-store, no-cache' 'Pragma': 'no-cache' 'Strict-Transport-Security': 'REDACTED' 'x-ms-activity-id': 'REDACTED' 'x-ms-last-state-change-utc': 'REDACTED' 'x-ms-resource-quota': 'REDACTED' 'x-ms-resource-usage': 'REDACTED' 'x-ms-schemaversion': 'REDACTED' 'lsn': 'REDACTED' 'x-ms-item-count': 'REDACTED' 'x-ms-request-charge': 'REDACTED' 'x-ms-alt-content-path': 'REDACTED' 'x-ms-content-path': 'REDACTED' 'x-ms-xp-role': 'REDACTED' 'x-ms-global-Committed-lsn': 'REDACTED' 'x-ms-number-of-read-regions': 'REDACTED' 'x-ms-transport-request-id': 'REDACTED' 'x-ms-cosmos-llsn': 'REDACTED' 'x-ms-session-token': 'REDACTED' 'x-ms-request-duration-ms': 'REDACTED' 'x-ms-serviceversion': 'REDACTED' 'x-ms-cosmos-internal-partition-id': 'REDACTED' 'Content-Location': 'REDACTED'
-4/17/2025, 2:46:48 PM
-Information
-Found 9 containers to copy
-4/17/2025, 2:46:48 PM
-Information
-Processing container: projects
-4/17/2025, 2:46:48 PM
-Information
-Request URL: 'https://azxopsdevmlopscosmosdb-eastus.documents.azure.com:443/dbs/pipeline_db/colls/' Request method: 'POST' Request headers: 'Cache-Control': 'no-cache' 'x-ms-version': 'REDACTED' 'x-ms-documentdb-query-iscontinuationexpected': 'REDACTED' 'x-ms-date': 'REDACTED' 'authorization': 'REDACTED' 'Content-Type': 'application/json' 'Accept': 'application/json' 'Content-Length': '214' 'User-Agent': 'azsdk-python-cosmos/4.9.0 Python/3.11.12 (Linux-5.15.173.1-2.cm2-x86_64-with-glibc2.31)' A body is sent with the request
-4/17/2025, 2:46:48 PM
-Information
-Response status: 404 Response headers: 'Content-Length': '6230' 'Date': 'Thu, 17 Apr 2025 14:46:47 GMT' 'Content-Type': 'application/json' 'Server': 'Microsoft-HTTPAPI/2.0' 'x-ms-gatewayversion': 'REDACTED' 'x-ms-activity-id': 'REDACTED' 'x-ms-last-state-change-utc': 'REDACTED' 'x-ms-schemaversion': 'REDACTED' 'lsn': 'REDACTED' 'x-ms-request-charge': 'REDACTED' 'x-ms-xp-role': 'REDACTED' 'x-ms-global-Committed-lsn': 'REDACTED' 'x-ms-number-of-read-regions': 'REDACTED' 'x-ms-transport-request-id': 'REDACTED' 'x-ms-cosmos-llsn': 'REDACTED' 'x-ms-session-token': 'REDACTED' 'x-ms-request-duration-ms': 'REDACTED' 'x-ms-serviceversion': 'REDACTED' 'x-ms-cosmos-internal-partition-id': 'REDACTED' 'Strict-Transport-Security': 'REDACTED'
-4/17/2025, 2:46:48 PM
-Error
-Error in database copy process: (NotFound) Message: {"Errors":["Resource Not Found. Learn more: https://aka.ms/cosmosdb-tsg-not-found"]} ActivityId: e8f46da7-e485-4adb-9be1-4150c2be0af1, Request URI: /apps/08512fb6-2c81-4432-bb1a-322a978d6061/services/e638c50a-c79c-4f4e-8a0a-79b5635a3244/partitions/727dd0e9-2b47-4f33-8bfd-1e8a65287371/replicas/133831011118791939s, RequestStats: RequestStartTime: 2025-04-17T14:46:48.0895376Z, RequestEndTime: 2025-04-17T14:46:48.0917074Z, Number of regions attempted:1 {"systemHistory":[{"dateUtc":"2025-04-17T14:45:50.4302280Z","cpu":2.264,"memory":437889128.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.0869,"availableThreads":32762,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1719},{"dateUtc":"2025-04-17T14:46:00.4404132Z","cpu":0.714,"memory":437890000.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.013,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1719},{"dateUtc":"2025-04-17T14:46:10.4506199Z","cpu":1.526,"memory":437876804.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.04,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723},{"dateUtc":"2025-04-17T14:46:20.4607679Z","cpu":1.900,"memory":437872996.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.1044,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723},{"dateUtc":"2025-04-17T14:46:30.4708018Z","cpu":0.969,"memory":437812200.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.0395,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723},{"dateUtc":"2025-04-17T14:46:40.4808870Z","cpu":1.121,"memory":437807144.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.0727,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723}]} RequestStart: 2025-04-17T14:46:48.0898050Z; ResponseTime: 2025-04-17T14:46:48.0916927Z; StoreResult: StorePhysicalAddress: rntbd://10.0.1.10:11000/apps/08512fb6-2c81-4432-bb1a-322a978d6061/services/e638c50a-c79c-4f4e-8a0a-79b5635a3244/partitions/727dd0e9-2b47-4f33-8bfd-1e8a65287371/replicas/133831011118791939s, LSN: 164, GlobalCommittedLsn: 164, PartitionKeyRangeId: , IsValid: True, StatusCode: 404, SubStatusCode: 0, RequestCharge: 1, ItemLSN: -1, SessionToken: -1#164, UsingLocalLSN: False, TransportException: null, BELatencyMs: 0.256, ActivityId: e8f46da7-e485-4adb-9be1-4150c2be0af1, RetryAfterInMs: , ReplicaHealthStatuses: [(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM)], TransportRequestTimeline: {"requestTimeline":[{"event": "Created", "startTimeUtc": "2025-04-17T14:46:48.0896298Z", "durationInMs": 0.0157},{"event": "ChannelAcquisitionStarted", "startTimeUtc": "2025-04-17T14:46:48.0896455Z", "durationInMs": 0.0048},{"event": "Pipelined", "startTimeUtc": "2025-04-17T14:46:48.0896503Z", "durationInMs": 0.1271},{"event": "Transit Time", "startTimeUtc": "2025-04-17T14:46:48.0897774Z", "durationInMs": 0.6465},{"event": "Received", "startTimeUtc": "2025-04-17T14:46:48.0904239Z", "durationInMs": 0.07},{"event": "Completed", "startTimeUtc": "2025-04-17T14:46:48.0904939Z", "durationInMs": 0}],"serviceEndpointStats":{"inflightRequests":1,"openConnections":1},"connectionStats":{"waitforConnectionInit":"False","callsPendingReceive":0,"lastSendAttempt":"2025-04-17T14:46:48.0881758Z","lastSend":"2025-04-17T14:46:48.0881930Z","lastReceive":"2025-04-17T14:46:48.0888838Z"},"requestSizeInBytes":452,"responseMetadataSizeInBytes":136,"responseBodySizeInBytes":84}; ResourceType: Database, OperationType: Read RequestStart: 2025-04-17T14:46:48.0898589Z; ResponseTime: 2025-04-17T14:46:48.0917074Z; StoreResult: StorePhysicalAddress: rntbd://10.0.1.13:11000/apps/08512fb6-2c81-4432-bb1a-322a978d6061/services/e638c50a-c79c-4f4e-8a0a-79b5635a3244/partitions/727dd0e9-2b47-4f33-8bfd-1e8a65287371/replicas/133831011082541269s, LSN: 164, GlobalCommittedLsn: 164, PartitionKeyRangeId: , IsValid: True, StatusCode: 404, SubStatusCode: 0, RequestCharge: 1, ItemLSN: -1, SessionToken: -1#164, UsingLocalLSN: False, TransportException: null, BELatencyMs: 0.63, ActivityId: e8f46da7-e485-4adb-9be1-4150c2be0af1, RetryAfterInMs: , ReplicaHealthStatuses: [(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM)], TransportRequestTimeline: {"requestTimeline":[{"event": "Created", "startTimeUtc": "2025-04-17T14:46:48.0898088Z", "durationInMs": 0.0037},{"event": "ChannelAcquisitionStarted", "startTimeUtc": "2025-04-17T14:46:48.0898125Z", "durationInMs": 0.0024},{"event": "Pipelined", "startTimeUtc": "2025-04-17T14:46:48.0898149Z", "durationInMs": 0.0398},{"event": "Transit Time", "startTimeUtc": "2025-04-17T14:46:48.0898547Z", "durationInMs": 1.3478},{"event": "Received", "startTimeUtc": "2025-04-17T14:46:48.0912025Z", "durationInMs": 0.1101},{"event": "Completed", "startTimeUtc": "2025-04-17T14:46:48.0913126Z", "durationInMs": 0}],"serviceEndpointStats":{"inflightRequests":1,"openConnections":1},"connectionStats":{"waitforConnectionInit":"False","callsPendingReceive":0,"lastSendAttempt":"2025-04-17T14:46:47.7726338Z","lastSend":"2025-04-17T14:46:47.7726504Z","lastReceive":"2025-04-17T14:46:47.7733739Z"},"requestSizeInBytes":452,"responseMetadataSizeInBytes":136,"responseBodySizeInBytes":84}; ResourceType: Database, OperationType: Read , SDK: Microsoft.Azure.Documents.Common/2.14.0 Code: NotFound Message: Message: {"Errors":["Resource Not Found. Learn more: https://aka.ms/cosmosdb-tsg-not-found"]} ActivityId: e8f46da7-e485-4adb-9be1-4150c2be0af1, Request URI: /apps/08512fb6-2c81-4432-bb1a-322a978d6061/services/e638c50a-c79c-4f4e-8a0a-79b5635a3244/partitions/727dd0e9-2b47-4f33-8bfd-1e8a65287371/replicas/133831011118791939s, RequestStats: RequestStartTime: 2025-04-17T14:46:48.0895376Z, RequestEndTime: 2025-04-17T14:46:48.0917074Z, Number of regions attempted:1 {"systemHistory":[{"dateUtc":"2025-04-17T14:45:50.4302280Z","cpu":2.264,"memory":437889128.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.0869,"availableThreads":32762,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1719},{"dateUtc":"2025-04-17T14:46:00.4404132Z","cpu":0.714,"memory":437890000.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.013,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1719},{"dateUtc":"2025-04-17T14:46:10.4506199Z","cpu":1.526,"memory":437876804.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.04,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723},{"dateUtc":"2025-04-17T14:46:20.4607679Z","cpu":1.900,"memory":437872996.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.1044,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723},{"dateUtc":"2025-04-17T14:46:30.4708018Z","cpu":0.969,"memory":437812200.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.0395,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723},{"dateUtc":"2025-04-17T14:46:40.4808870Z","cpu":1.121,"memory":437807144.000,"threadInfo":{"isThreadStarving":"False","threadWaitIntervalInMs":0.0727,"availableThreads":32765,"minThreads":52,"maxThreads":32767},"numberOfOpenTcpConnection":1723}]} RequestStart: 2025-04-17T14:46:48.0898050Z; ResponseTime: 2025-04-17T14:46:48.0916927Z; StoreResult: StorePhysicalAddress: rntbd://10.0.1.10:11000/apps/08512fb6-2c81-4432-bb1a-322a978d6061/services/e638c50a-c79c-4f4e-8a0a-79b5635a3244/partitions/727dd0e9-2b47-4f33-8bfd-1e8a65287371/replicas/133831011118791939s, LSN: 164, GlobalCommittedLsn: 164, PartitionKeyRangeId: , IsValid: True, StatusCode: 404, SubStatusCode: 0, RequestCharge: 1, ItemLSN: -1, SessionToken: -1#164, UsingLocalLSN: False, TransportException: null, BELatencyMs: 0.256, ActivityId: e8f46da7-e485-4adb-9be1-4150c2be0af1, RetryAfterInMs: , ReplicaHealthStatuses: [(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM)], TransportRequestTimeline: {"requestTimeline":[{"event": "Created", "startTimeUtc": "2025-04-17T14:46:48.0896298Z", "durationInMs": 0.0157},{"event": "ChannelAcquisitionStarted", "startTimeUtc": "2025-04-17T14:46:48.0896455Z", "durationInMs": 0.0048},{"event": "Pipelined", "startTimeUtc": "2025-04-17T14:46:48.0896503Z", "durationInMs": 0.1271},{"event": "Transit Time", "startTimeUtc": "2025-04-17T14:46:48.0897774Z", "durationInMs": 0.6465},{"event": "Received", "startTimeUtc": "2025-04-17T14:46:48.0904239Z", "durationInMs": 0.07},{"event": "Completed", "startTimeUtc": "2025-04-17T14:46:48.0904939Z", "durationInMs": 0}],"serviceEndpointStats":{"inflightRequests":1,"openConnections":1},"connectionStats":{"waitforConnectionInit":"False","callsPendingReceive":0,"lastSendAttempt":"2025-04-17T14:46:48.0881758Z","lastSend":"2025-04-17T14:46:48.0881930Z","lastReceive":"2025-04-17T14:46:48.0888838Z"},"requestSizeInBytes":452,"responseMetadataSizeInBytes":136,"responseBodySizeInBytes":84}; ResourceType: Database, OperationType: Read RequestStart: 2025-04-17T14:46:48.0898589Z; ResponseTime: 2025-04-17T14:46:48.0917074Z; StoreResult: StorePhysicalAddress: rntbd://10.0.1.13:11000/apps/08512fb6-2c81-4432-bb1a-322a978d6061/services/e638c50a-c79c-4f4e-8a0a-79b5635a3244/partitions/727dd0e9-2b47-4f33-8bfd-1e8a65287371/replicas/133831011082541269s, LSN: 164, GlobalCommittedLsn: 164, PartitionKeyRangeId: , IsValid: True, StatusCode: 404, SubStatusCode: 0, RequestCharge: 1, ItemLSN: -1, SessionToken: -1#164, UsingLocalLSN: False, TransportException: null, BELatencyMs: 0.63, ActivityId: e8f46da7-e485-4adb-9be1-4150c2be0af1, RetryAfterInMs: , ReplicaHealthStatuses: [(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM),(port: 11000 | status: Unknown | lkt: 4/11/2025 11:23:18 AM)], TransportRequestTimeline: {"requestTimeline":[{"event": "Created", "startTimeUtc": "2025-04-17T14:46:48.0898088Z", "durationInMs": 0.0037},{"event": "ChannelAcquisitionStarted", "startTimeUtc": "2025-04-17T14:46:48.0898125Z", "durationInMs": 0.0024},{"event": "Pipelined", "startTimeUtc": "2025-04-17T14:46:48.0898149Z", "durationInMs": 0.0398},{"event": "Transit Time", "startTimeUtc": "2025-04-17T14:46:48.0898547Z", "durationInMs": 1.3478},{"event": "Received", "startTimeUtc": "2025-04-17T14:46:48.0912025Z", "durationInMs": 0.1101},{"event": "Completed", "startTimeUtc": "2025-04-17T14:46:48.0913126Z", "durationInMs": 0}],"serviceEndpointStats":{"inflightRequests":1,"openConnections":1},"connectionStats":{"waitforConnectionInit":"False","callsPendingReceive":0,"lastSendAttempt":"2025-04-17T14:46:47.7726338Z","lastSend":"2025-04-17T14:46:47.7726504Z","lastReceive":"2025-04-17T14:46:47.7733739Z"},"requestSizeInBytes":452,"responseMetadataSizeInBytes":136,"responseBodySizeInBytes":84}; ResourceType: Database, OperationType: Read , SDK: Microsoft.Azure.Documents.Common/2.14.0
-4/17/2025, 2:46:48 PM
-Information
-Executed 'Functions.functionCopyData' (Succeeded, Id=b835d70b-ec1e-49de-8bf0-666b5525adbc, Duration=665ms)
